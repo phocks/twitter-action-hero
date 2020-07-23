@@ -1,12 +1,19 @@
 import Twitter from "twitter-lite";
-
 import { keys } from "./keys";
 
-const client = new Twitter(keys);
+const twitter = new Twitter(keys);
 
-client
-  .get("account/verify_credentials")
+twitter
+  .get("statuses/mentions_timeline")
   .then((results) => {
-    console.log("results", results);
+    let users = [];
+    for (const record of results) {
+      users.push(record.user.id);
+      console.log(record.user.id);
+    }
+
+    console.log("Found: " + users.length);
+
+    // addUsersToList(users, "1280669347413848064");
   })
   .catch(console.error);
