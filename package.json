@@ -12,7 +12,6 @@
   "author": "Joshua Byrd",
   "license": "MIT",
   "devDependencies": {
-    "@types/express": "^4.17.7",
     "@types/node": "^14.0.24",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
