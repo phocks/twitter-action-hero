@@ -5,7 +5,7 @@ const twitter = new Twitter(keys);
 
 import addUsersToList from "./addUsersToList"
 
-export default (listId?: String) => {
+export default (listId: string) => {
   twitter
     .get("statuses/mentions_timeline")
     .then((results) => {
