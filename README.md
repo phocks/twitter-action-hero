@@ -8,6 +8,8 @@ Use the Twitter API to do things.
 
 Clone this repo and run `npm install` then edit the code and run `npm run dev`.
 
+You'll need to make a `keys.ts` file with your Twitter keys.
+
 Pull requests for different and interesting actions welcome.
 
 ## Build and use
