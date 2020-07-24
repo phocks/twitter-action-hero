@@ -6,7 +6,7 @@ const twitter = new Twitter(keys);
 export default (userIds: any, listId: any) => {
   let userList = "";
 
-  userIds.forEach((userId: any, iteration: Number) => {
+  userIds.forEach((userId: any, iteration: number) => {
     if (userList === "") userList = userList + userId;
     else userList = userList + "," + userId;
   });
