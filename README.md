@@ -1,6 +1,6 @@
 # Twitter Action Hero
 
-Use the Twitter API to do things.
+Use the Twitter API to do things. Just starting out. Doesn't do too much just yet!
 
 ## Install and dev
 
