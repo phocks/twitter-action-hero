@@ -5,7 +5,7 @@ const twitter = new Twitter(keys);
 
 import addUsersToList from "./addUsersToList"
 
-export default (listId?: any) => {
+export default (listId?: String) => {
   twitter
     .get("statuses/mentions_timeline")
     .then((results) => {
@@ -17,7 +17,7 @@ export default (listId?: any) => {
 
       console.log("Found: " + users.length);
 
-      addUsersToList(users, "1280669347413848064");
+      addUsersToList(users, listId);
     })
     .catch((error) => console.log(error));
 };
