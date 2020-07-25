@@ -5,26 +5,26 @@ const twitter = new Twitter(keys);
 
 import addUsersToList from "./addUsersToList";
 
-export default (listId: string) => {
-  twitter
-    .get("statuses/mentions_timeline")
-    .then((results) => {
-      let users = [];
+export default async (listId: string) => {
+  try {
+    const results = await twitter.get("statuses/mentions_timeline");
+    let users = [];
 
-      // Loop through results and add to array
-      console.log("Latest 20 mentions...");
-      console.log("----------");
+    // Loop through results and add to array
+    console.log("Latest 20 mentions...");
+    console.log("----------");
 
-      for (const record of results) {
-        console.log(record.user.screen_name);
-        users.push(record.user.id);
-      }
+    for (const record of results) {
+      console.log(record.user.screen_name);
+      users.push(record.user.id);
+    }
 
-      console.log("----------");
-      console.log(`Found ${users.length} user ids: ${users}`);
+    console.log("----------");
+    console.log(`Found ${users.length} user ids: ${users}`);
 
-      // Add found users to list
-      addUsersToList(users, listId);
-    })
-    .catch((error) => console.log(error));
+    // Add found users to list
+    addUsersToList(users, listId);
+  } catch (error) {
+    console.error(error);
+  }
 };
