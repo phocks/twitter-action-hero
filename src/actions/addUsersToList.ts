@@ -18,7 +18,7 @@ export default (userIds: any, listId: any) => {
       list_id: listId,
     })
     .then((result) => {
-      console.log(result);
+      console.log(`Users added to list: ${result.uri}`);
     })
     .catch((error) => console.log(error));
 };
