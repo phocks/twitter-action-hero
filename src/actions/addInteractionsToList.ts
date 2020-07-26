@@ -4,8 +4,8 @@
  *
  * Will check that the user is not on the list already.
  *
- * Will try to write a json file of users it has already tried
- * to add to the list.
+ * Will check a local database to see if it has already tried
+ * that user.
  */
 
 import Twitter from "twitter-lite";
@@ -14,7 +14,7 @@ import { keys } from "../keys";
 const twitter = new Twitter(keys);
 const appRoot = require("app-root-path");
 
-// Set up database
+// Set up a local database
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
 const adapter = new FileSync(`${appRoot}/data/db.json`);
