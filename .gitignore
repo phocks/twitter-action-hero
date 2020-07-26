@@ -2,3 +2,4 @@ node_modules
 /src/keys.ts
 dist
 .vscode
+data/db.json

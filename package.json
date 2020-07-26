@@ -22,6 +22,8 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "app-root-path": "^3.0.0",
+    "lowdb": "^1.0.0",
     "twitter-lite": "^0.14.0"
   }
 }
