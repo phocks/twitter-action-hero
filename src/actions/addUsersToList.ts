@@ -1,9 +1,8 @@
 import Twitter from "twitter-lite";
-import { keys } from "../keys";
 
-const twitter = new Twitter(keys);
+export default (userIds: any, listId: any, keys: any) => {
+  const twitter = new Twitter(keys);
 
-export default (userIds: any, listId: any) => {
   let userList = "";
 
   userIds.forEach((userId: any, iteration: number) => {

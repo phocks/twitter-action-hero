@@ -9,9 +9,7 @@
  */
 
 import Twitter from "twitter-lite";
-import { keys } from "../keys";
 
-const twitter = new Twitter(keys);
 const appRoot = require("app-root-path");
 
 // Set up a local database
@@ -24,8 +22,10 @@ db.defaults({ usersInteracted: [] }).write();
 import addUsersToList from "./addUsersToList";
 import getListMembers from "./getListMembers";
 
-export default async (listId: string) => {
+export default async (listId: string, keys: any) => {
   try {
+    const twitter = new Twitter(keys);
+
     const results = await twitter.get("statuses/mentions_timeline");
     let users = [];
 
@@ -41,7 +41,7 @@ export default async (listId: string) => {
     console.log("----------");
     console.log(`Found ${users.length} user ids: ${users}`);
 
-    const alreadyOnList = await getListMembers(listId);
+    const alreadyOnList = await getListMembers(listId, keys);
     let alreadyInDb = db.get("usersInteracted").value();
 
     console.log(`${alreadyOnList.length} users already on list`);
@@ -60,7 +60,8 @@ export default async (listId: string) => {
 
     // Filter users already on list
     const filteredUsers = users.filter((user) => {
-      if (alreadyOnList.includes(user) || alreadyInDb.includes(user)) return false;
+      if (alreadyOnList.includes(user) || alreadyInDb.includes(user))
+        return false;
       else return true;
     });
 
@@ -68,7 +69,7 @@ export default async (listId: string) => {
 
     if (filteredUsers.length > 0) {
       // Add found users to list
-      addUsersToList(filteredUsers, listId);
+      addUsersToList(filteredUsers, listId, keys);
 
       // Also write to local database just in case
       // To stop user complaints if they don't want to be
