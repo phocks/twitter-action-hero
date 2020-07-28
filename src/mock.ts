@@ -2,7 +2,9 @@
 
 import getRelationship from "./actions/getRelationship";
 import getListMembers from "./actions/getListMembers";
-import addInteractionsToList from "./actions/addInteractionsToList"
+import addInteractionsToList from "./actions/addInteractionsToList";
+
+import { userKeys } from "./keys";
 
 // getRelationship("BarackObama", "phocks");
 
@@ -11,7 +13,7 @@ const main = async () => {
 
   // console.log(test);
 
-  addInteractionsToList("1280669347413848064")
+  addInteractionsToList("1280669347413848064", userKeys);
 };
 
 main();
