@@ -1,6 +1,6 @@
-require("dotenv").config(); // Load environment variables
+const appRoot = require("app-root-path"); // Require due to no types
+require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
 
-// Load actions
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet"
 
