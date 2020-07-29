@@ -1,4 +1,4 @@
-import appRoot from "app-root-path";
+const appRoot = require("app-root-path"); // Require due to no types
 require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
 import addInteractionsToList from "./actions/addInteractionsToList";
 
