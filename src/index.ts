@@ -4,8 +4,6 @@ import addInteractionsToList from "./actions/addInteractionsToList";
 
 import { userKeys, cowspriactyBotKeys } from "./keys";
 
-console.log(userKeys);
-
 const main = async () => {
   addInteractionsToList("1280669347413848064", userKeys);
 };
