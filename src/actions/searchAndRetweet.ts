@@ -6,21 +6,44 @@ export default async (
   keys: TwitterOptions
 ) => {
   const twitter = new Twitter(keys);
+  try {
+    const result = await twitter.get("search/tweets", {
+      q: searchPhrase,
+      result_type: "recent",
+      lang: "en",
+    });
 
-  const result = await twitter.get("search/tweets", {
-    q: searchPhrase,
-    result_type: "recent",
-    lang: "en",
-  });
+    for (const status of result.statuses) {
+      const screenName = status.user.screen_name;
+      const tweetId = status.id_str;
 
-  for (const status of result.statuses) {
-    console.log(status.user.screen_name);
-    const screenName = status.user.screen_name;
+      if (blockedUsernames.includes(screenName)) continue;
 
-    if (blockedUsernames.includes(screenName)) {
-      console.log("includes");
-    } else {
-      console.log("no");
+      console.log(tweetId);
+
+      twitter
+        .post(`statuses/retweet/${tweetId}`, {
+          id: tweetId,
+        })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          console.error(error.errors);
+        });
+
+      twitter
+        .post("favorites/create", {
+          id: tweetId,
+        })
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          console.error(error.errors);
+        });
     }
+  } catch (error) {
+    console.error(error);
   }
 };
