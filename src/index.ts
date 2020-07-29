@@ -1,7 +1,10 @@
-require("dotenv").config(); // Load environment variables
+const appRoot = require("app-root-path");
+require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
 import addInteractionsToList from "./actions/addInteractionsToList";
 
 import { userKeys, cowspriactyBotKeys } from "./keys";
+
+console.log(userKeys);
 
 const main = async () => {
   addInteractionsToList("1280669347413848064", userKeys);
