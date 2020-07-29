@@ -24,7 +24,7 @@ const blockedUsernames = [
 ];
 
 const main = async () => {
-  // addInteractionsToList("1280669347413848064", userKeys);
+  addInteractionsToList("1280669347413848064", userKeys);
   searchAndRetweet("cowspiracy -filter:nativeretweets -filter:replies", blockedUsernames, cowspriactyBotKeys);
 };
 
