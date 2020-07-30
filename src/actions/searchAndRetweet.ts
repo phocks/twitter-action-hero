@@ -6,6 +6,13 @@ export default async (
   blockedUsernames: string[],
   keys: TwitterOptions
 ) => {
+  // Log something to the console
+  console.log(`
+------------------------------------------------
+This is the start of the searchAndRetweet action
+------------------------------------------------
+`);
+
   const twitter = new Twitter(keys);
 
   const [resultError, result] = await to(
