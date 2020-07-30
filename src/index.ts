@@ -1,7 +1,6 @@
 // Initial set up
 const appRoot = require("app-root-path"); // Require due to no types
 require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
-require('log-timestamp');
 
 // Import actions
 import addInteractionsToList from "./actions/addInteractionsToList";
@@ -25,6 +24,7 @@ const blockedUsernames = [
   "LA_CHEFs",
   "RuthMcMScott",
   "BioMickWatson",
+  "REGENETARIANISM"
 ];
 
 const main = async () => {
