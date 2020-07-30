@@ -4,7 +4,7 @@ require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment varia
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet";
 
-import { userKeys, cowspriactyBotKeys } from "./keys";
+import { myKeys, cowspriactyBotKeys } from "./keys";
 
 // Cowspiracybot blocklist
 const blockedUsernames = [
@@ -24,8 +24,11 @@ const blockedUsernames = [
 ];
 
 const main = async () => {
-  addInteractionsToList("1280669347413848064", userKeys);
-  searchAndRetweet(
+  // Adds latest @replies & @mentions to a list
+  await addInteractionsToList("1280669347413848064", myKeys);
+
+  // Searches a phrase and retweets those tweets
+  await searchAndRetweet(
     "cowspiracy -filter:nativeretweets -filter:replies",
     blockedUsernames,
     cowspriactyBotKeys

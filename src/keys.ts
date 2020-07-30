@@ -1,4 +1,4 @@
-export const userKeys = {
+export const myKeys = {
   consumer_key: process.env.USER_CONSUMER_KEY!,
   consumer_secret: process.env.USER_CONSUMER_SECRET!,
   access_token_key: process.env.USER_ACCESS_TOKEN!,
