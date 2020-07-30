@@ -23,6 +23,11 @@ import addUsersToList from "./addUsersToList";
 import getListMembers from "./getListMembers";
 
 export default async (listId: string, keys: any) => {
+  // Log something to the console
+  console.log("-----------------------------------------------------");
+  console.log("This is the start of the addInteractionsToList action");
+  console.log("-----------------------------------------------------");
+
   try {
     const twitter = new Twitter(keys);
 
