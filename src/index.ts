@@ -1,9 +1,13 @@
+// Initial set up
 const appRoot = require("app-root-path"); // Require due to no types
 require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
+require('log-timestamp');
 
+// Import actions
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet"
 
+// Import environment keys
 import { userKeys, cowspriactyBotKeys } from "./keys";
 
 // Cowspiracybot blocklist
