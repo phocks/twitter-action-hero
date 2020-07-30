@@ -7,11 +7,9 @@ export default async (
   keys: TwitterOptions
 ) => {
   // Log something to the console
-  console.log(`
-------------------------------------------------
-This is the start of the searchAndRetweet action
-------------------------------------------------
-`);
+  console.log("------------------------------------------------");
+  console.log("This is the start of the searchAndRetweet action");
+  console.log("------------------------------------------------");
 
   const twitter = new Twitter(keys);
 
