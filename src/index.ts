@@ -24,7 +24,8 @@ const blockedUsernames = [
   "LA_CHEFs",
   "RuthMcMScott",
   "BioMickWatson",
-  "REGENETARIANISM"
+  "REGENETARIANISM",
+  "corner_mandi"
 ];
 
 const main = async () => {
