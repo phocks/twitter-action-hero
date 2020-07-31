@@ -1,9 +1,12 @@
+// Initial set up
 const appRoot = require("app-root-path"); // Require due to no types
 require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment variables
 
+// Import actions
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet";
 
+// Import environment keys
 import { myKeys, cowspriactyBotKeys } from "./keys";
 
 // Cowspiracybot blocklist
@@ -21,6 +24,7 @@ const blockedUsernames = [
   "LA_CHEFs",
   "RuthMcMScott",
   "BioMickWatson",
+  "REGENETARIANISM"
 ];
 
 const main = async () => {
