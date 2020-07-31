@@ -14,7 +14,7 @@ const blockedUsernames = ["cowspiracybot"];
 
 const main = async () => {
   // Adds latest @replies & @mentions to a list
-  // await addInteractionsToList("1280669347413848064", myKeys);
+  await addInteractionsToList("1280669347413848064", myKeys);
 
   // Searches a phrase and retweets those tweets
   await searchAndRetweet(
