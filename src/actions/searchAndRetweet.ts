@@ -21,6 +21,11 @@ export default async (
     })
   );
 
+  if (resultError) {
+    console.log("Twitter search failed...");
+    return;
+  }
+
   for (const status of result.statuses) {
     const screenName = status.user.screen_name;
     const tweetId = status.id_str;
