@@ -1,6 +1,3 @@
 {
-  "targets": [
-    "ScottMorrisonMP",
-    "GladysB"
-  ]
+  "targets": ["ScottMorrisonMP", "GladysB"]
 }

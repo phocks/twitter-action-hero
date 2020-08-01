@@ -25,7 +25,7 @@ const main = async () => {
   );
 };
 
-const auspolwatchConfig = require("./config/auspolwatch.json");
+import auspolwatchConfig from "./config/auspolwatch.json";
 
 const test = async () => {
   watchUsers(auspolwatchConfig.targets, auspolwatchKeys);

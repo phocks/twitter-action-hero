@@ -24,6 +24,7 @@ export default async (
 
   if (resultError) {
     console.log("Twitter search failed...");
+    console.error(resultError);
     return;
   }
 
