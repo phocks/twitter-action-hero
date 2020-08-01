@@ -25,8 +25,10 @@ const main = async () => {
   );
 };
 
+const auspolwatchConfig = require("./config/auspolwatch.json");
+
 const test = async () => {
-  watchUsers(["phocks"], auspolwatchKeys);
+  watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
 // Start the main process
