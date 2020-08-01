@@ -15,7 +15,7 @@ const appRoot = require("app-root-path");
 // Set up a local database
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
-const adapter = new FileSync(`${appRoot}/data/interactions.json`);
+const adapter = new FileSync(`${appRoot}/data/addInteractionsToList.json`);
 const db = low(adapter);
 db.defaults({ usersInteracted: [] }).write();
 

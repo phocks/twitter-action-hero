@@ -6,7 +6,7 @@ const appRoot = require("app-root-path");
 // Set up a local database
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
-const adapter = new FileSync(`${appRoot}/data/watchedUsers.json`);
+const adapter = new FileSync(`${appRoot}/data/watchUsers.json`);
 const db = low(adapter);
 db.defaults({ userObjects: [] }).write();
 
