@@ -11,3 +11,10 @@ export const cowspriactyBotKeys = {
   access_token_key: process.env.CB_ACCESS_TOKEN!,
   access_token_secret: process.env.CB_ACCESS_TOKEN_SECRET!,
 };
+
+export const auspolwatchKeys = {
+  consumer_key: process.env.AUSPOLWATCH_CONSUMER_KEY!,
+  consumer_secret: process.env.AUSPOLWATCH_CONSUMER_SECRET!,
+  access_token_key: process.env.AUSPOLWATCH_ACCESS_TOKEN!,
+  access_token_secret: process.env.AUSPOLWATCH_ACCESS_TOKEN_SECRET!,
+};

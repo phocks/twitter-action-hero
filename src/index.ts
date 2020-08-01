@@ -5,9 +5,10 @@ require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment varia
 // Import actions
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet";
+import watchUsers from "./actions/watchUsers";
 
 // Import environment keys
-import { myKeys, cowspriactyBotKeys } from "./keys";
+import { myKeys, cowspriactyBotKeys, auspolwatchKeys } from "./keys";
 
 // Cowspiracybot blocklist
 const blockedUsernames = ["cowspiracybot"];
@@ -24,4 +25,12 @@ const main = async () => {
   );
 };
 
+const test = async () => {
+  watchUsers(["phocks"], auspolwatchKeys);
+};
+
+// Start the main process
 main();
+
+// A testing thread (uncomment to test)
+// test();

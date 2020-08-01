@@ -4,9 +4,9 @@
  * between two arbitrary users.
  */
 
-import Twitter from "twitter-lite";
+import Twitter, { TwitterOptions } from "twitter-lite";
 
-export default (source: string, target: string, keys: any) => {
+export default (source: string, target: string, keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
   twitter
