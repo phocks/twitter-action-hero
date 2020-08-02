@@ -14,6 +14,7 @@ import { myKeys, cowspriactyBotKeys, auspolwatchKeys } from "./keys";
 const blockedUsernames = ["cowspiracybot"];
 import auspolwatchConfig from "./config/auspolwatch.json";
 
+// Main production thread
 const main = async () => {
   // Adds latest @replies & @mentions to a list
   await addInteractionsToList("1280669347413848064", myKeys);
@@ -26,12 +27,11 @@ const main = async () => {
   );
 };
 
+// Development thread
 const test = async () => {
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
-// Start the main process
-main();
-
-// A testing thread (uncomment to test)
-// test();
+// Check for dev
+if (process.env.NODE_ENV === "development") test();
+else main();
