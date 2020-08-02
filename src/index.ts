@@ -10,8 +10,9 @@ import watchUsers from "./actions/watchUsers";
 // Import environment keys
 import { myKeys, cowspriactyBotKeys, auspolwatchKeys } from "./keys";
 
-// Cowspiracybot blocklist
+// Load somee configs for actions
 const blockedUsernames = ["cowspiracybot"];
+import auspolwatchConfig from "./config/auspolwatch.json";
 
 const main = async () => {
   // Adds latest @replies & @mentions to a list
@@ -25,14 +26,12 @@ const main = async () => {
   );
 };
 
-import auspolwatchConfig from "./config/auspolwatch.json";
-
 const test = async () => {
-  watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
+  await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
 // Start the main process
 main();
 
 // A testing thread (uncomment to test)
-// test();
+test();

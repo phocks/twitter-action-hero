@@ -13,6 +13,7 @@ db.defaults({ userObjects: [] }).write();
 export default async (usersToWatch: string[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
+  // Lookup data on all our users to watch
   const joinedUsers = usersToWatch.join(",");
 
   const [usersLookupError, usersLookupResult] = await to(
@@ -22,9 +23,7 @@ export default async (usersToWatch: string[], keys: TwitterOptions) => {
   if (usersLookupError) console.error(usersLookupError);
 
   if (usersLookupResult) {
-    console.log(usersLookupResult);
-    for (const user of usersLookupResult) {
-      console.log(user.screen_name);
-    }
+    // Write all user objects to db
+    db.set("userObjects", usersLookupResult).write();
   }
 };
