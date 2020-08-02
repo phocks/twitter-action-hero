@@ -19,10 +19,16 @@ interface WatchedUser {
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
-  // Check if already in local database
+  // Check if missing from local database
   for (const user of usersToWatch) {
-    const exists = db.get("usersToWatch").find({ id_str: user.id_str }).value();
-    console.log(exists);
+    const userExists = db
+      .get("usersToWatch")
+      .find({ id_str: user.id_str })
+      .value();
+
+    if (!userExists) {
+      db.get("usersToWatch").push(user).write();
+    }
   }
 
   // db.set("watchedUsers", usersToWatch).write();
