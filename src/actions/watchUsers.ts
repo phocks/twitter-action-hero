@@ -1,5 +1,6 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
+import _ from "lodash";
 
 const appRoot = require("app-root-path");
 
@@ -26,14 +27,11 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       .find({ id_str: user.id_str })
       .value();
 
+    // Add users if missing
     if (!userExists) {
       db.get("usersToWatch").push(user).write();
     }
   }
-
-  // db.set("watchedUsers", usersToWatch).write();
-  // const storedUsers = db.get("watchedUsers").value();
-  // console.log(storedUsers);
 
   // Lookup data on all our users to watch
   const joinedUsers = usersToWatch
@@ -47,8 +45,13 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   if (usersLookupError) console.error(usersLookupError);
 
   if (usersLookupResult) {
-    console.log(usersLookupResult);
-    // Write all user objects to db
-    // db.get("userObjects").push(usersLookupResult).write();
+    const storedUsers = db.get("usersToWatch");
+
+    for (const storedUser of storedUsers) {
+      const x = _.find(usersLookupResult, {
+        screen_name: storedUser.screen_name,
+      });
+      console.log(x);
+    }
   }
 };
