@@ -48,10 +48,17 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     const storedUsers = db.get("usersToWatch");
 
     for (const storedUser of storedUsers) {
-      const x = _.find(usersLookupResult, {
-        screen_name: storedUser.screen_name,
+      const userMatch = _.find(usersLookupResult, {
+        id_str: storedUser.id_str,
       });
-      console.log(x);
+
+      if (userMatch) {
+        // Check name change
+        if (typeof storedUser.name === "undefined") {
+          console.log(storedUsers);
+          storedUsers.find({ id_str: "34116377" }).set("test", "test").write();
+        }
+      }
     }
   }
 };
