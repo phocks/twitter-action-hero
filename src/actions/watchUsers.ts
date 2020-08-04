@@ -107,6 +107,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check for description change
       result = runComparison("description", localUser, remoteUser);
       console.log(result);
+
+      // Check profile URL
+      result = runComparison("url", localUser, remoteUser);
+      console.log(result);
     }
     console.log();
   }
