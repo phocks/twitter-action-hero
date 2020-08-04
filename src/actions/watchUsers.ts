@@ -20,24 +20,56 @@ interface WatchedUser {
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
-  console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***")
+  console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***");
 
-  // Check if missing from local database
+  // Loop through supplied targets
   for (const user of usersToWatch) {
-    console.log(`Checking for user ${user.screen_name} in local dbn...`);
+    console.log(`Checking for user "${user.screen_name}" in local database...`);
     const userExists = db
       .get("usersToWatch")
       .find({ id_str: user.id_str })
       .value();
-
-    // TODO: Add check for screen name change??? or simply ignore until later
 
     // Add users if missing
     if (!userExists) {
       console.log("User missing in local db. Adding...");
       db.get("usersToWatch").push(user).write();
     } else {
-      console.log(`User ${user.screen_name} exists!`);
+      console.log(`User "${user.screen_name}" exists!`);
+    }
+
+    // Re-get the local user
+    const localUser = db.get("usersToWatch").find({ id_str: user.id_str });
+
+    // Get remote user
+    const [remoteUserError, remoteUser] = await to(
+      twitter.get("users/show", { user_id: user.id_str })
+    );
+
+    // Process errors
+    if (remoteUserError) {
+      console.error(remoteUserError);
+      continue; // end processing
+    }
+
+    if (remoteUser) {
+      // Check if screen name is the same
+      if (remoteUser.screen_name === localUser.value().screen_name) {
+        console.log(
+          `screen_name "${remoteUser.screen_name}" hasn't changed since last time...`
+        );
+      } else {
+        console.log(
+          `screen_name has changed! It was "${
+            localUser.value().screen_name
+          }" and now is "${remoteUser.screen_name}"`
+        );
+
+        // TODO: Tweet about screen name change
+
+        console.log(`Saving new screen_name "${remoteUser.screen_name}" to local database...`)
+        localUser.assign({ screen_name: remoteUser.screen_name }).write();
+      }
     }
   }
 
