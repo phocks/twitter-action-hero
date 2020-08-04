@@ -18,30 +18,38 @@ interface WatchedUser {
 }
 
 const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
-  if (typeof localUser.value()[attribute] === "undefined") {
-    console.log(
-      `"${attribute}" not found in local database. Setting to "${remoteUser[attribute]}"`
-    );
-    localUser.assign({ name: remoteUser.name }).write();
-  } else if (remoteUser[attribute] === localUser.value()[attribute]) {
-    console.log(
-      `"${attribute}" "${remoteUser[attribute]}" hasn't changed since last time...`
-    );
-  } else {
-    console.log(
-      `"${attribute}" has changed! It was "${
-        localUser.value()[attribute]
-      }" and now is "${remoteUser[attribute]}"`
-    );
+  const localAttribute = localUser.value()[attribute];
+  const remoteAttribute = remoteUser[attribute];
 
-    // TODO: Tweet about change
-
+  if (typeof localAttribute === "undefined") {
     console.log(
-      `Saving new "${attribute}" name "${remoteUser.name}" to local database...`
+      `"${attribute}" not found in local database. Setting to "${remoteAttribute}"`
     );
-    // Write change to the local database
-    localUser.assign({ name: remoteUser.name }).write();
+    localUser.assign({ [attribute]: remoteUser[attribute] }).write();
+
+    return { changed: false, old: localAttribute, new: remoteAttribute };
   }
+
+  if (remoteAttribute === localAttribute) {
+    console.log(
+      `"${attribute}" "${remoteAttribute}" hasn't changed since last time...`
+    );
+    
+    return { changed: false, old: localAttribute, new: remoteAttribute };
+  }
+
+  // Finally that means it has changed
+  console.log(
+    `"${attribute}" has changed! It was "${localAttribute}" and now is "${remoteAttribute}"`
+  );
+
+  console.log(
+    `Saving new "${attribute}" name "${remoteUser.name}" to local database...`
+  );
+  // Write change to the local database
+  localUser.assign({ name: remoteUser.name }).write();
+
+  return { changed: true, old: localAttribute, new: remoteAttribute };
 };
 
 // Main module
@@ -75,18 +83,30 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       twitter.get("users/show", { user_id: user.id_str })
     );
 
-    // Process errors
+    // Process api error
     if (remoteUserError) {
       console.error(remoteUserError);
       continue; // end processing
     }
 
     if (remoteUser) {
+      // console.log(remoteUser);
+
       // Check if screen name is the same
-      runComparison("screen_name", localUser, remoteUser);
+      let result = runComparison("screen_name", localUser, remoteUser);
+      console.log(result);
 
       // Check if Twitter name is the same
-      runComparison("name", localUser, remoteUser);
+      result = runComparison("name", localUser, remoteUser);
+      console.log(result);
+
+      // Check for location change
+      result = runComparison("location", localUser, remoteUser);
+      console.log(result);
+
+      // Check for description change
+      result = runComparison("description", localUser, remoteUser);
+      console.log(result);
     }
     console.log();
   }
