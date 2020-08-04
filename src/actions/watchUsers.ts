@@ -17,6 +17,35 @@ interface WatchedUser {
   id_str: string;
 }
 
+const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
+  if (typeof localUser.value()[attribute] === "undefined") {
+    console.log(
+      `"${attribute}" not found in local database. Setting to "${remoteUser[attribute]}"`
+    );
+    localUser.assign({ name: remoteUser.name }).write();
+  } else if (remoteUser[attribute] === localUser.value()[attribute]) {
+    console.log(
+      `"${attribute}" "${remoteUser[attribute]}" hasn't changed since last time...`
+    );
+  } else {
+    // Handle a Twitter name change
+    console.log(
+      `"${attribute}" has changed! It was "${
+        localUser.value()[attribute]
+      }" and now is "${remoteUser[attribute]}"`
+    );
+
+    // TODO: Tweet about Twitter name change
+
+    console.log(
+      `Saving new "${attribute}" name "${remoteUser.name}" to local database...`
+    );
+    // Write change to the local database
+    localUser.assign({ name: remoteUser.name }).write();
+  }
+};
+
+// Main module
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
@@ -54,51 +83,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
     if (remoteUser) {
       // Check if screen name is the same
-      if (remoteUser.screen_name === localUser.value().screen_name) {
-        console.log(
-          `screen_name "${remoteUser.screen_name}" hasn't changed since last time...`
-        );
-      } else {
-        console.log(
-          `screen_name has changed! It was "${
-            localUser.value().screen_name
-          }" and now is "${remoteUser.screen_name}"`
-        );
+      runComparison("screen_name", localUser, remoteUser);
 
-        // TODO: Tweet about screen name change
-
-        console.log(`Saving new screen_name "${remoteUser.screen_name}" to local database...`)
-        localUser.assign({ screen_name: remoteUser.screen_name }).write();
-      }
+      // Check if Twitter name is the same
+      runComparison("name", localUser, remoteUser);
     }
   }
-
-  // // Lookup data on all our users to watch
-  // const joinedUsers = usersToWatch
-  //   .map((user: WatchedUser) => user.id_str)
-  //   .join(",");
-
-  // const [usersLookupError, usersLookupResult] = await to(
-  //   twitter.get("users/lookup", { user_id: joinedUsers })
-  // );
-
-  // if (usersLookupError) console.error(usersLookupError);
-
-  // if (usersLookupResult) {
-  //   const storedUsers = db.get("usersToWatch");
-
-  //   for (const storedUser of storedUsers) {
-  //     const userMatch = _.find(usersLookupResult, {
-  //       id_str: storedUser.id_str,
-  //     });
-
-  //     if (userMatch) {
-  //       // Check name change
-  //       if (typeof storedUser.name === "undefined") {
-  //         console.log(storedUsers);
-  //         storedUsers.find({ id_str: "34116377" }).set("test", "test").write();
-  //       }
-  //     }
-  //   }
-  // }
 };
