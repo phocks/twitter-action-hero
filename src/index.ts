@@ -25,6 +25,8 @@ const production = async () => {
     blockedUsernames,
     cowspriactyBotKeys
   );
+
+  await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
 // Development thread
