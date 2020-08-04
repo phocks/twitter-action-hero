@@ -28,14 +28,13 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
       `"${attribute}" "${remoteUser[attribute]}" hasn't changed since last time...`
     );
   } else {
-    // Handle a Twitter name change
     console.log(
       `"${attribute}" has changed! It was "${
         localUser.value()[attribute]
       }" and now is "${remoteUser[attribute]}"`
     );
 
-    // TODO: Tweet about Twitter name change
+    // TODO: Tweet about change
 
     console.log(
       `Saving new "${attribute}" name "${remoteUser.name}" to local database...`
@@ -50,6 +49,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
   console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***");
+  console.log();
 
   // Loop through supplied targets
   for (const user of usersToWatch) {
@@ -88,5 +88,6 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check if Twitter name is the same
       runComparison("name", localUser, remoteUser);
     }
+    console.log();
   }
 };
