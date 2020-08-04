@@ -20,45 +20,53 @@ interface WatchedUser {
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
+  console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***")
+
   // Check if missing from local database
   for (const user of usersToWatch) {
+    console.log(`Checking for user ${user.screen_name} in local dbn...`);
     const userExists = db
       .get("usersToWatch")
       .find({ id_str: user.id_str })
       .value();
 
+    // TODO: Add check for screen name change??? or simply ignore until later
+
     // Add users if missing
     if (!userExists) {
+      console.log("User missing in local db. Adding...");
       db.get("usersToWatch").push(user).write();
+    } else {
+      console.log(`User ${user.screen_name} exists!`);
     }
   }
 
-  // Lookup data on all our users to watch
-  const joinedUsers = usersToWatch
-    .map((user: WatchedUser) => user.id_str)
-    .join(",");
+  // // Lookup data on all our users to watch
+  // const joinedUsers = usersToWatch
+  //   .map((user: WatchedUser) => user.id_str)
+  //   .join(",");
 
-  const [usersLookupError, usersLookupResult] = await to(
-    twitter.get("users/lookup", { user_id: joinedUsers })
-  );
+  // const [usersLookupError, usersLookupResult] = await to(
+  //   twitter.get("users/lookup", { user_id: joinedUsers })
+  // );
 
-  if (usersLookupError) console.error(usersLookupError);
+  // if (usersLookupError) console.error(usersLookupError);
 
-  if (usersLookupResult) {
-    const storedUsers = db.get("usersToWatch");
+  // if (usersLookupResult) {
+  //   const storedUsers = db.get("usersToWatch");
 
-    for (const storedUser of storedUsers) {
-      const userMatch = _.find(usersLookupResult, {
-        id_str: storedUser.id_str,
-      });
+  //   for (const storedUser of storedUsers) {
+  //     const userMatch = _.find(usersLookupResult, {
+  //       id_str: storedUser.id_str,
+  //     });
 
-      if (userMatch) {
-        // Check name change
-        if (typeof storedUser.name === "undefined") {
-          console.log(storedUsers);
-          storedUsers.find({ id_str: "34116377" }).set("test", "test").write();
-        }
-      }
-    }
-  }
+  //     if (userMatch) {
+  //       // Check name change
+  //       if (typeof storedUser.name === "undefined") {
+  //         console.log(storedUsers);
+  //         storedUsers.find({ id_str: "34116377" }).set("test", "test").write();
+  //       }
+  //     }
+  //   }
+  // }
 };
