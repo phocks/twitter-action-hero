@@ -27,7 +27,6 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
       `"${attribute}" not found in local database. Setting to "${remoteAttribute}"`
     );
     localUser.assign({ [attribute]: remoteUser[attribute] }).write();
-
     return { changed: false, old: localAttribute, new: remoteAttribute };
   }
 
@@ -35,7 +34,6 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
     console.log(
       `"${attribute}" "${remoteAttribute}" hasn't changed since last time...`
     );
-
     return { changed: false, old: localAttribute, new: remoteAttribute };
   }
 
@@ -49,7 +47,6 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
   );
   // Write change to the local database
   localUser.assign({ name: remoteUser.name }).write();
-
   return { changed: true, old: localAttribute, new: remoteAttribute };
 };
 
@@ -113,19 +110,36 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check profile URL
       result = runComparison("url", localUser, remoteUser);
       console.log(result);
-      console.log("Expanding short-urls...")
-      if (result.old) {
-        const [error, oldUrl] = await to(tall(result.old));
-        if (!error) console.log(`Old url un-shortened: ${oldUrl}`);
-        else console.error(error);
-      }
 
-      if (result.new) {
-        const [error, newUrl] = await to(tall(result.new));
-        if (!error) console.log(`New url un-shortened: ${newUrl}`);
-        else console.error(error);
+      // // Expand URLs
+      // console.log("Expanding short-urls...");
+      // if (result.old) {
+      //   const [error, oldUrl] = await to(tall(result.old));
+      //   if (!error) console.log(`Old url un-shortened: ${oldUrl}`);
+      //   else console.error(error);
+      // }
+      // if (result.new) {
+      //   const [error, newUrl] = await to(tall(result.new));
+      //   if (!error) console.log(`New url un-shortened: ${newUrl}`);
+      //   else console.error(error);
+      // }
+
+      // Check favourites
+      result = runComparison("favourites_count", localUser, remoteUser);
+      console.log(result);
+
+      // Populate initial latest favourites
+      if (typeof localUser.value().recent_favourites === "undefined") {
+        console.log("Recent favorites not found");
+        const [favsError, favsResult] = await to(
+          twitter.get("favorites/list", { user_id: user.id_str })
+        );
+        const favIds = favsResult.map((fav: any) => fav.id_str);
+
+        // Write favourites to the database
+        localUser.assign({ recent_favourites: favIds }).write();
       }
-    }
+    } // End of: if (remoteUser)
     console.log();
   }
 };
