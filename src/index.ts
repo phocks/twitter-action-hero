@@ -26,6 +26,7 @@ const production = async () => {
     cowspriactyBotKeys
   );
 
+  // Holder action that will become @auspolwatch
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
