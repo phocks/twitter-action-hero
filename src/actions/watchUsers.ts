@@ -1,7 +1,7 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
 import _ from "lodash";
-import { tall } from 'tall'
+import tall from "tall";
 
 const appRoot = require("app-root-path");
 
@@ -35,7 +35,7 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
     console.log(
       `"${attribute}" "${remoteAttribute}" hasn't changed since last time...`
     );
-    
+
     return { changed: false, old: localAttribute, new: remoteAttribute };
   }
 
@@ -111,7 +111,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // Check profile URL
       result = runComparison("url", localUser, remoteUser);
-      console.log(result);
+      // const oldUrl = await tall(result.old);
+      const newUrl = await tall(result.new);
+
+      console.log(newUrl);
     }
     console.log();
   }
