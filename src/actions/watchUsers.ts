@@ -111,10 +111,15 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // Check profile URL
       result = runComparison("url", localUser, remoteUser);
-      // const oldUrl = await tall(result.old);
-      const newUrl = await tall(result.new);
+      if (result.old) {
+        const [error, oldUrl] = await to(tall(result.old));
+        if (!error) console.log(`Old url un-shortened: ${oldUrl}`);
+      }
 
-      console.log(newUrl);
+      if (result.new) {
+        const [error, newUrl] = await to(tall(result.new));
+        if (!error) console.log(`New url un-shortened: ${newUrl}`);
+      }
     }
     console.log();
   }
