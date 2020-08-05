@@ -1,7 +1,7 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
 import _ from "lodash";
-import tall from "tall";
+// import tall from "tall";
 
 const appRoot = require("app-root-path");
 
