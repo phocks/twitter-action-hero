@@ -135,8 +135,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           twitter.get("favorites/list", { user_id: user.id_str })
         );
         const favIds = favsResult.map((fav: any) => fav.id_str);
-
+        console.log("Current favourite:")
+        console.log(favIds)
         // Write favourites to the database
+        console.log("Writing current favs to database...")
         localUser.assign({ recent_favourites: favIds }).write();
       }
     } // End of: if (remoteUser)
