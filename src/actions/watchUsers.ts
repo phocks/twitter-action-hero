@@ -139,50 +139,79 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       result = runComparison("favourites_count", localUser, remoteUser);
       console.log(result);
 
-      // Populate initial latest favourites
+      // If favs to get change we want to handle it
+      // TODO: check this works
+      if (localUser.value().favourites_fetched !== FAVS_TO_GET) {
+        console.log(`Favourites to fetch changed. Resetting...`);
+        localUser
+          .assign({
+            favourites_fetched: FAVS_TO_GET,
+            recent_favourites: undefined,
+          })
+          .write();
+      }
+
+      // Populate initial latest favourites and fav fetch count
       if (typeof localUser.value().recent_favourites === "undefined") {
         console.log("Recent favorites not found");
         const [favsError, favsResult] = await to(
-          twitter.get("favorites/list", { user_id: user.id_str, count: FAVS_TO_GET })
+          twitter.get("favorites/list", {
+            user_id: user.id_str,
+            count: FAVS_TO_GET,
+          })
         );
+
+        if (favsError) console.error(favsError);
 
         if (favsResult) {
           const favIds = favsResult.map((fav: any) => fav.id_str);
-          console.log("Remote favourites:");
+          console.log(`Remote favourites: ${favIds.length}`);
           console.log(favIds);
           // Write favourites to the database
           console.log("Writing current favs to database...");
-          localUser.assign({ recent_favourites: favIds }).write();
+          localUser
+            .assign({
+              recent_favourites: favIds,
+            })
+            .write();
         }
         // Otherwise check for changes in fav count
       } else if (result.changed) {
         console.log("Checking for new favourites...");
 
         const [favsError, favsResult] = await to(
-          twitter.get("favorites/list", { user_id: user.id_str, count: FAVS_TO_GET })
+          twitter.get("favorites/list", {
+            user_id: user.id_str,
+            count: FAVS_TO_GET,
+          })
         );
-  
+
         if (favsResult) {
           const favIds = favsResult.map((fav: any) => fav.id_str);
-          console.log("Remote favourites:");
+          console.log(`Remote favourites: (${favIds.length})`);
           console.log(favIds);
 
           const recentFavs = localUser.value().recent_favourites;
 
-          console.log(`Recent favs: `)
-          console.log(recentFavs)
-  
-          const newFavs = favIds.filter((favId: string) => !recentFavs.includes(favId));
-  
-          console.log(`Filtered favs:`)
+          console.log(`Saved favs: (${recentFavs.length})`);
+          console.log(recentFavs);
+
+          const newFavs = favIds.filter(
+            // If favourites to fetch doesn't match just return empty
+
+            (favId: string) => {
+              if (remoteUser.favourites_fetched !== FAVS_TO_GET) return false;
+              return !recentFavs.includes(favId);
+            }
+          );
+
+          console.log(`Filtered favs:`);
           console.log(newFavs);
           // Write favourites to the database
           console.log("Writing current favs to database...");
           localUser.assign({ recent_favourites: favIds }).write();
         }
       }
-
-      
     } // End of: if (remoteUser)
     console.log();
   }
