@@ -126,8 +126,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       //   else console.error(error);
       // }
 
-      const url: any = await longly(result.new);
-      console.log(url);
+      // const url: any = await longly(result.new);
+      // console.log(url);
 
       // longly(result.new).then((result: any) => {
       //   console.log(result);
@@ -138,12 +138,16 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       console.log(result);
 
       // Populate initial latest favourites
-      if (typeof localUser.value().recent_favourites === "undefined") {
+      if (true || typeof localUser.value().recent_favourites === "undefined") {
         console.log("Recent favorites not found");
         const [favsError, favsResult] = await to(
           twitter.get("favorites/list", { user_id: user.id_str })
         );
-        const favIds = favsResult.map((fav: any) => fav.id_str);
+        console.log(favsResult);
+        const favIds = favsResult.map((fav: any) => ({
+          id_str: fav.id_str,
+          created_at: fav.created_at,
+        }));
         console.log("Current favourite:");
         console.log(favIds);
         // Write favourites to the database

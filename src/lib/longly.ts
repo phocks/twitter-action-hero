@@ -1,3 +1,5 @@
+// Expand a t.co etc short url
+
 import fetch from "isomorphic-unfetch";
 
 export default async (shortUrl: string) => {
@@ -6,6 +8,6 @@ export default async (shortUrl: string) => {
     const newUrl = response.url;
     return newUrl;
   } catch (error) {
-    throw error;
+    throw Error(error);
   }
 };
