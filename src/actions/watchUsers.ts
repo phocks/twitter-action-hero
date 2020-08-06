@@ -2,6 +2,8 @@ import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
 import _ from "lodash";
 // import tall from "tall";
+// const unshorten = require("unshorten");
+import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
 
@@ -124,6 +126,13 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       //   else console.error(error);
       // }
 
+      const url: any = await longly(result.new);
+      console.log(url);
+
+      // longly(result.new).then((result: any) => {
+      //   console.log(result);
+      // });
+
       // Check favourites
       result = runComparison("favourites_count", localUser, remoteUser);
       console.log(result);
@@ -135,10 +144,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           twitter.get("favorites/list", { user_id: user.id_str })
         );
         const favIds = favsResult.map((fav: any) => fav.id_str);
-        console.log("Current favourite:")
-        console.log(favIds)
+        console.log("Current favourite:");
+        console.log(favIds);
         // Write favourites to the database
-        console.log("Writing current favs to database...")
+        console.log("Writing current favs to database...");
         localUser.assign({ recent_favourites: favIds }).write();
       }
     } // End of: if (remoteUser)
