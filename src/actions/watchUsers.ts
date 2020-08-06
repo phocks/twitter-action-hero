@@ -74,6 +74,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     (x: string) => !toWatchIds.includes(x)
   );
 
+  console.log(`Users removed from config:`)
   console.log(idsNoLongerWatched);
 
   // Loop through and remove from database
