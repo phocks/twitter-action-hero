@@ -1,6 +1,6 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
-import _ from "lodash";
+// import _ from "lodash";
 // import tall from "tall";
 // const unshorten = require("unshorten");
 import longly from "../lib/longly";
