@@ -7,6 +7,8 @@ import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
 
+const FAVS_TO_GET = 10;
+
 // Set up a local database
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
@@ -48,7 +50,7 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
     `Saving new "${attribute}" name "${remoteUser.name}" to local database...`
   );
   // Write change to the local database
-  localUser.assign({ name: remoteUser.name }).write();
+  localUser.assign({ [attribute]: remoteUser[attribute] }).write();
   return { changed: true, old: localAttribute, new: remoteAttribute };
 };
 
@@ -138,22 +140,49 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       console.log(result);
 
       // Populate initial latest favourites
-      if (true || typeof localUser.value().recent_favourites === "undefined") {
+      if (typeof localUser.value().recent_favourites === "undefined") {
         console.log("Recent favorites not found");
         const [favsError, favsResult] = await to(
-          twitter.get("favorites/list", { user_id: user.id_str })
+          twitter.get("favorites/list", { user_id: user.id_str, count: FAVS_TO_GET })
         );
-        console.log(favsResult);
-        const favIds = favsResult.map((fav: any) => ({
-          id_str: fav.id_str,
-          created_at: fav.created_at,
-        }));
-        console.log("Current favourite:");
-        console.log(favIds);
-        // Write favourites to the database
-        console.log("Writing current favs to database...");
-        localUser.assign({ recent_favourites: favIds }).write();
+
+        if (favsResult) {
+          const favIds = favsResult.map((fav: any) => fav.id_str);
+          console.log("Remote favourites:");
+          console.log(favIds);
+          // Write favourites to the database
+          console.log("Writing current favs to database...");
+          localUser.assign({ recent_favourites: favIds }).write();
+        }
+        // Otherwise check for changes in fav count
+      } else if (result.changed) {
+        console.log("Checking for new favourites...");
+
+        const [favsError, favsResult] = await to(
+          twitter.get("favorites/list", { user_id: user.id_str, count: FAVS_TO_GET })
+        );
+  
+        if (favsResult) {
+          const favIds = favsResult.map((fav: any) => fav.id_str);
+          console.log("Remote favourites:");
+          console.log(favIds);
+
+          const recentFavs = localUser.value().recent_favourites;
+
+          console.log(`Recent favs: `)
+          console.log(recentFavs)
+  
+          const newFavs = favIds.filter((favId: string) => !recentFavs.includes(favId));
+  
+          console.log(`Filtered favs:`)
+          console.log(newFavs);
+          // Write favourites to the database
+          console.log("Writing current favs to database...");
+          localUser.assign({ recent_favourites: favIds }).write();
+        }
       }
+
+      
     } // End of: if (remoteUser)
     console.log();
   }
