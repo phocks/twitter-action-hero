@@ -1,13 +1,12 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
-// import _ from "lodash";
-// import tall from "tall";
 // const unshorten = require("unshorten");
 import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
 
-const FAVS_TO_GET = 10;
+const FAVS_TO_GET = 200;
+const FRIENDS_TO_GET = 5000;
 
 // Set up a local database
 const low = require("lowdb");
@@ -135,17 +134,24 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       //   console.log(result);
       // });
 
+      // Check verified status
+      result = runComparison("verified", localUser, remoteUser);
+      console.log(result);
+
+      // See if account protected (private)
+      result = runComparison("protected", localUser, remoteUser);
+      console.log(result);
+
       // Check favourites
       result = runComparison("favourites_count", localUser, remoteUser);
       console.log(result);
 
-      // If favs to get change we want to handle it
-      // TODO: check this works
-      if (localUser.value().favourites_fetched !== FAVS_TO_GET) {
+      // If number of favs to get change we want to reset the database ids
+      if (localUser.value().favourites_to_fetch_count !== FAVS_TO_GET) {
         console.log(`Favourites to fetch changed. Resetting...`);
         localUser
           .assign({
-            favourites_fetched: FAVS_TO_GET,
+            favourites_to_fetch_count: FAVS_TO_GET,
             recent_favourites: undefined,
           })
           .write();
@@ -197,12 +203,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           console.log(recentFavs);
 
           const newFavs = favIds.filter(
-            // If favourites to fetch doesn't match just return empty
-
-            (favId: string) => {
-              if (remoteUser.favourites_fetched !== FAVS_TO_GET) return false;
-              return !recentFavs.includes(favId);
-            }
+            (favId: string) => !recentFavs.includes(favId)
           );
 
           console.log(`Filtered favs:`);
@@ -212,6 +213,25 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           localUser.assign({ recent_favourites: favIds }).write();
         }
       }
+
+      // Check if friend count changed (indicates following/unfollowing)
+      result = runComparison("friends_count", localUser, remoteUser);
+      console.log(result);
+
+      // If number of friends to get change we want to reset the database ids
+      if (localUser.value().friends_to_fetch_count !== FRIENDS_TO_GET) {
+        console.log(`Friend ids to fetch changed. Resetting...`);
+        localUser
+          .assign({
+            friends_to_fetch_count: FRIENDS_TO_GET,
+            friends_ids: undefined,
+          })
+          .write();
+      }
+
+      // TODO: friends/id is 15 / 15 min window rate limited so we need
+      // to find a way to handle rate limiting...
+      
     } // End of: if (remoteUser)
     console.log();
   }
