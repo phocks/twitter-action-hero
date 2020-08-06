@@ -60,6 +60,30 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***");
   console.log();
 
+  // Check for removed targets and clean database
+  console.log(`Checking for removed targets...`);
+  const dbTargetIds = db.get("usersToWatch").map("id_str").value();
+  console.log(`Currently in database:`);
+  console.log(dbTargetIds);
+  const toWatchIds = usersToWatch.map((user: any) => user.id_str);
+  console.log(`Users to watch in config:`);
+  console.log(toWatchIds);
+
+  // Get difference of arrays
+  const idsNoLongerWatched = dbTargetIds.filter(
+    (x: string) => !toWatchIds.includes(x)
+  );
+
+  console.log(idsNoLongerWatched);
+
+  // Loop through and remove from database
+  for (const id_str of idsNoLongerWatched) {
+    console.log(`Removing ${id_str} from local database`)
+    db.get("usersToWatch").remove({ id_str: id_str }).write();
+  }
+
+  return;
+
   // Loop through supplied targets
   for (const user of usersToWatch) {
     console.log(`Checking for user "${user.screen_name}" in local database...`);
@@ -148,7 +172,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of favs to get change we want to reset the database ids
       if (localUser.value().favourites_to_fetch_count !== FAVS_TO_GET) {
-        console.log(`Favourites to fetch changed. Resetting...`);
+        console.log(`(Re)setting favourites to fetch count...`);
         localUser
           .assign({
             favourites_to_fetch_count: FAVS_TO_GET,
@@ -220,7 +244,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of friends to get change we want to reset the database ids
       if (localUser.value().friends_to_fetch_count !== FRIENDS_TO_GET) {
-        console.log(`Friend ids to fetch changed. Resetting...`);
+        console.log(`(Re)setting friends to fetch count...`);
         localUser
           .assign({
             friends_to_fetch_count: FRIENDS_TO_GET,
@@ -231,7 +255,6 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // TODO: friends/id is 15 / 15 min window rate limited so we need
       // to find a way to handle rate limiting...
-      
     } // End of: if (remoteUser)
     console.log();
   }
