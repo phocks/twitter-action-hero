@@ -82,8 +82,6 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     db.get("usersToWatch").remove({ id_str: id_str }).write();
   }
 
-  return;
-
   // Loop through supplied targets
   for (const user of usersToWatch) {
     console.log(`Checking for user "${user.screen_name}" in local database...`);
