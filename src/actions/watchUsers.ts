@@ -171,7 +171,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of favs to get change we want to reset the database ids
       if (localUser.value().favourites_to_fetch_count !== FAVS_TO_GET) {
-        console.log(`(Re)setting favourites to fetch count...`);
+        console.log(`(Re)setting favourites to fetch count as "${FAVS_TO_GET}"...`);
         localUser
           .assign({
             favourites_to_fetch_count: FAVS_TO_GET,
@@ -243,7 +243,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of friends to get change we want to reset the database ids
       if (localUser.value().friends_to_fetch_count !== FRIENDS_TO_GET) {
-        console.log(`(Re)setting friends to fetch count...`);
+        console.log(`(Re)setting friends to fetch count as "${FRIENDS_TO_GET}"...`);
         localUser
           .assign({
             friends_to_fetch_count: FRIENDS_TO_GET,

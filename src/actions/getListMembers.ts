@@ -1,7 +1,5 @@
 import Twitter from "twitter-lite";
 
-
-
 const MAX_LIST_COUNT = 5000;
 
 export default async (listId: string, keys: any) => {
