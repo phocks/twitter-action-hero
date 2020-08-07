@@ -1,7 +1,6 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
-// const unshorten = require("unshorten");
-import longly from "../lib/longly";
+// import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
 
@@ -57,6 +56,12 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
 
+  // Tweet it out
+  // const [tweetError, tweetResult] = await to(
+  //   twitter.post("statuses/update", { status: "Test." })
+  // );
+  // console.log(tweetResult);
+
   console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***");
   console.log();
 
@@ -74,12 +79,12 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     (x: string) => !toWatchIds.includes(x)
   );
 
-  console.log(`Users removed from config:`)
+  console.log(`Users removed from config:`);
   console.log(idsNoLongerWatched);
 
   // Loop through and remove from database
   for (const id_str of idsNoLongerWatched) {
-    console.log(`Removing ${id_str} from local database`)
+    console.log(`Removing ${id_str} from local database`);
     db.get("usersToWatch").remove({ id_str: id_str }).write();
   }
 
@@ -171,7 +176,9 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of favs to get change we want to reset the database ids
       if (localUser.value().favourites_to_fetch_count !== FAVS_TO_GET) {
-        console.log(`(Re)setting favourites to fetch count as "${FAVS_TO_GET}"...`);
+        console.log(
+          `(Re)setting favourites to fetch count as "${FAVS_TO_GET}"...`
+        );
         localUser
           .assign({
             favourites_to_fetch_count: FAVS_TO_GET,
@@ -243,7 +250,9 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // If number of friends to get change we want to reset the database ids
       if (localUser.value().friends_to_fetch_count !== FRIENDS_TO_GET) {
-        console.log(`(Re)setting friends to fetch count as "${FRIENDS_TO_GET}"...`);
+        console.log(
+          `(Re)setting friends to fetch count as "${FRIENDS_TO_GET}"...`
+        );
         localUser
           .assign({
             friends_to_fetch_count: FRIENDS_TO_GET,

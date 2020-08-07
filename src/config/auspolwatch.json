@@ -1,6 +1,8 @@
 {
   "targets": [
     { "screen_name": "ScottMorrisonMP", "id_str": "34116377" },
+    { "screen_name": "AlboMP", "id_str": "254515782"},
+    {"screen_name": "MrKRudd", "id_str": "16832632"},
     { "screen_name": "GladysB", "id_str": "704882735815401472" },
     { "screen_name": "DanielAndrewsMP", "id_str": "228535666" }
   ]
