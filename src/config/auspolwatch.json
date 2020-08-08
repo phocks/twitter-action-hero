@@ -29,7 +29,6 @@
     { "screen_name": "cpyne", "id_str": "2592733051" },
     { "screen_name": "SenatorNash", "id_str": "2649623161" },
     { "screen_name": "RealBobKatter", "id_str": "310726037" },
-    { "screen_name": "polley_helen", "id_str": "929373746" },
     { "screen_name": "thepmo", "id_str": "838631981315338240" },
     { "screen_name": "MRobertsQLD", "id_str": "762470063261704192" },
     { "screen_name": "SenPaterson", "id_str": "28791311" },
@@ -47,5 +46,9 @@
     { "screen_name": "KenWyattMP", "id_str": "196039332" },
     { "screen_name": "GladysB", "id_str": "704882735815401472" },
     { "screen_name": "DanielAndrewsMP", "id_str": "228535666" }
+  ],
+  "testing": [
+    { "screen_name": "polley_helen", "id_str": "929373746" },
+    { "screen_name": "phocks", "id_str": "5703342" }
   ]
 }

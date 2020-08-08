@@ -226,7 +226,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
         // Otherwise check for changes in fav count
       } else if (result.changed) {
         console.log(`Detected favourite count change for ${user.screen_name}`);
-        if (verbose) console.log("Checking for new favourites...");
+        if (verbose)
+          console.log("Getting new favourites list from Twitter API...");
 
         const [favsError, favsResult] = await to(
           twitter.get("favorites/list", {
@@ -247,13 +248,41 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           if (verbose) console.log(`Saved favs: (${recentFavs.length})`);
           if (verbose) console.log(recentFavs);
 
-          const newFavs = favIds.filter(
+          // Get differental of new favs
+          const newFavs: string = favIds.filter(
             (favId: string) => !recentFavs.includes(favId)
           );
 
-          console.log(`New favourites: ${newFavs}`);
+          console.log(`New favourites from ${newFavs}`);
 
-          // Write favourites to the database
+          // Tweet our new favs
+          for (const fav of newFavs) {
+            // Get full current favourite object
+            const currentFav = favsResult.find(
+              (favEl: any) => favEl.id_str === fav
+            );
+
+            // Some minor error handling just in case
+            if (!currentFav || !currentFav.user) {
+              console.log(`Something bad happened with "${fav}" favourite`);
+              return;
+            }
+
+            console.log(`Tweeting fav from: ${currentFav.user.screen_name}`);
+
+            const [tweetError, tweetResult] = await to(
+              twitter.post("statuses/update", {
+                status: `${currentFav.user.screen_name} liked this tweet: https://twitter.com/${currentFav.user.screen_name}/status/${fav}`,
+              })
+            );
+
+            if (tweetError) console.error(tweetError);
+            if (tweetResult) {
+              console.log(`Tweeted ${fav} from ${currentFav.user.screen_name}`);
+            }
+          }
+
+          // Write updated favourites to the database
           if (verbose) console.log("Writing current favs to database...");
           localUser.assign({ recent_favourites: favIds }).write();
         }
