@@ -96,6 +96,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
   // Loop through supplied targets
   for (const user of usersToWatch) {
+    console.log(`Processing: ${user.screen_name}`);
+
     if (verbose)
       console.log(
         `Checking for user "${user.screen_name}" in local database...`
@@ -223,6 +225,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
         }
         // Otherwise check for changes in fav count
       } else if (result.changed) {
+        console.log(`Detected favourite count change for ${user.screen_name}`);
         if (verbose) console.log("Checking for new favourites...");
 
         const [favsError, favsResult] = await to(
@@ -231,6 +234,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
             count: FAVS_TO_GET,
           })
         );
+
+        if (favsError) console.error(favsError);
 
         if (favsResult) {
           const favIds = favsResult.map((fav: any) => fav.id_str);
@@ -246,8 +251,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
             (favId: string) => !recentFavs.includes(favId)
           );
 
-          if (verbose) console.log(`Filtered favs:`);
-          if (verbose) console.log(newFavs);
+          console.log(`New favourites: ${newFavs}`);
+
           // Write favourites to the database
           if (verbose) console.log("Writing current favs to database...");
           localUser.assign({ recent_favourites: favIds }).write();

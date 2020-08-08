@@ -28,7 +28,7 @@ const production = async () => {
   );
 
   // Holder action that will become @auspolwatch
-  await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
+  // await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
 import originalTargets from "./utils/targets.json";
