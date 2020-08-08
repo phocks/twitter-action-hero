@@ -47,7 +47,7 @@
     { "screen_name": "GladysB", "id_str": "704882735815401472" },
     { "screen_name": "DanielAndrewsMP", "id_str": "228535666" }
   ],
-  "testing": [
+  "removed_or_testing": [
     { "screen_name": "polley_helen", "id_str": "929373746" },
     { "screen_name": "phocks", "id_str": "5703342" }
   ]

@@ -270,15 +270,27 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
             console.log(`Tweeting fav from: ${currentFav.user.screen_name}`);
 
-            const [tweetError, tweetResult] = await to(
-              twitter.post("statuses/update", {
-                status: `${currentFav.user.screen_name} liked this tweet: https://twitter.com/${currentFav.user.screen_name}/status/${fav}`,
-              })
-            );
+            if (process.env.NODE_ENV === "development") {
+              console.log(
+                "Currently in development mode so not tweeting, but would have tweeted: " +
+                  `${localUser.value().screen_name} liked ` +
+                  `this tweet: https://twitter.com/${currentFav.user.screen_name}/status/${fav}`
+              );
+            } else {
+              const [tweetError, tweetResult] = await to(
+                twitter.post("statuses/update", {
+                  status:
+                    `${localUser.value().screen_name} liked ` +
+                    `this tweet: https://twitter.com/${currentFav.user.screen_name}/status/${fav}`,
+                })
+              );
 
-            if (tweetError) console.error(tweetError);
-            if (tweetResult) {
-              console.log(`Tweeted ${fav} from ${currentFav.user.screen_name}`);
+              if (tweetError) console.error(tweetError);
+              if (tweetResult) {
+                console.log(
+                  `Tweeted ${fav} from ${currentFav.user.screen_name}`
+                );
+              }
             }
           }
 
