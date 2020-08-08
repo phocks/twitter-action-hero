@@ -6,6 +6,7 @@ require("dotenv").config({ path: `${appRoot}/.env` }); // Load environment varia
 import addInteractionsToList from "./actions/addInteractionsToList";
 import searchAndRetweet from "./actions/searchAndRetweet";
 import watchUsers from "./actions/watchUsers";
+import convertScreenNames from "./utils/convertScreenNames"
 
 // Import environment keys
 import { myKeys, cowspriactyBotKeys, auspolwatchKeys } from "./keys";
@@ -30,9 +31,12 @@ const production = async () => {
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 };
 
+import originalTargets from "./utils/targets.json";
+
 // Development thread
 const development = async () => {
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
+  // await convertScreenNames(originalTargets, auspolwatchKeys)
 };
 
 // Check for dev
