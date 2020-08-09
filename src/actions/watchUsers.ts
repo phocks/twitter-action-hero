@@ -261,7 +261,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
               (favEl: any) => favEl.id_str === fav
             );
 
-            log(currentFav);
+            // log(currentFav);
 
             // Some minor error handling just in case
             if (!currentFav || !currentFav.user) {
