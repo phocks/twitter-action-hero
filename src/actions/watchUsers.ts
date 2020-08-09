@@ -13,7 +13,7 @@ const FileSync = require("lowdb/adapters/FileSync");
 const adapter = new FileSync(`${appRoot}/data/watchUsers.json`);
 const db = low(adapter);
 
-db.defaults({ usersToWatch: [] }).write();
+db.defaults({ usersToWatch: [], screenNameChanged: [] }).write();
 
 interface WatchedUser {
   screen_name: string;
@@ -61,12 +61,6 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
 // Main module
 export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
   const twitter = new Twitter(keys);
-
-  // Tweet it out
-  // const [tweetError, tweetResult] = await to(
-  //   twitter.post("statuses/update", { status: "Test." })
-  // );
-  // console.log(tweetResult);
 
   console.log("*** THIS IS THE START OF WATCH USERS SCRIPT ***");
 
@@ -122,16 +116,34 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     // Process api error
     if (remoteUserError) {
       console.error(remoteUserError);
-      continue; // end processing
+      continue; // end processing current user
     }
 
     // Here we start our checks to see if anything has changed
     if (remoteUser) {
-      // console.log(remoteUser);
+      console.log(remoteUser);
 
       // Check if screen name is the same
       let result = runComparison("screen_name", localUser, remoteUser);
       log(result);
+
+      if (result.changed) {
+        // IMPORTANT CHANGE ESPECIALLY DUE TO VERIFIED STATUS
+        console.log(
+          `SCREEN NAME CHANGED from "${localUser.value().screen_name}" to "${
+            remoteUser.screen_name
+          }"`
+        );
+
+        // Screen name is also in config so log to db to update later manually
+        db.get("screenNameChanged")
+          .push({
+            id_str: remoteUser.id_str,
+            local_screen_name: localUser.value().screen_name,
+            remote_screen_name: remoteUser.screen_name,
+          })
+          .write();
+      }
 
       // Check if Twitter name is the same
       result = runComparison("name", localUser, remoteUser);
@@ -144,6 +156,18 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check for description change
       result = runComparison("description", localUser, remoteUser);
       log(result);
+
+      if (result.changed) {
+        console.log(`Processing profile change...`);
+
+        db.get("screenNameChanged")
+          .push({
+            id_str: remoteUser.id_str,
+            local_screen_name: localUser.value().screen_name,
+            remote_screen_name: remoteUser.screen_name,
+          })
+          .write();
+      }
 
       // Check profile URL
       result = runComparison("url", localUser, remoteUser);
