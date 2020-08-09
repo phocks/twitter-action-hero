@@ -121,7 +121,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
     // Here we start our checks to see if anything has changed
     if (remoteUser) {
-      console.log(remoteUser);
+      // log(remoteUser);
 
       // Check if screen name is the same
       let result = runComparison("screen_name", localUser, remoteUser);
