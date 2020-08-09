@@ -208,6 +208,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           const favIds = favsResult.map((fav: any) => fav.id_str);
           log(`Remote favourites: ${favIds.length}`);
           log(favIds);
+
           // Write favourites to the database
           log("Writing current favs to database...");
           localUser
@@ -216,9 +217,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
             })
             .write();
         }
-        // Otherwise check for changes in fav count
       } else if (result.changed) {
-        console.log(`Detected favourite count change for ${user.screen_name}`);
+        console.log(`Detected new favourites from "${user.screen_name}"`);
         log("Getting new favourites list from Twitter API...");
 
         const [favsError, favsResult] = await to(
@@ -235,20 +235,27 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           log(`Remote favourites: (${favIds.length})`);
           log(favIds);
 
-          const recentFavs = localUser.value().recent_favourites;
+          const savedFavs = localUser.value().recent_favourites;
 
-          log(`Saved favs: (${recentFavs.length})`);
-          log(recentFavs);
+          log(`Saved favs: (${savedFavs.length})`);
+          log(savedFavs);
 
           // Get differental of new favs
           const newFavs: string = favIds.filter(
-            (favId: string) => !recentFavs.includes(favId)
+            (favId: string) => !savedFavs.includes(favId)
           );
 
           console.log(`New favourites from ${newFavs}`);
 
           // Tweet our new favs
           for (const fav of newFavs) {
+            if (result.new < result.old) {
+              console.log(
+                `Fav count went down. User probably un-liked. Not tweeting...`
+              );
+
+              continue;
+            }
             // Get full current favourite object
             const currentFav = favsResult.find(
               (favEl: any) => favEl.id_str === fav
