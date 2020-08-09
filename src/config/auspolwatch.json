@@ -48,8 +48,11 @@
     { "screen_name": "DanielAndrewsMP", "id_str": "228535666" },
     { "screen_name": "AnnastaciaMP", "id_str": "256833444" }
   ],
-  "removed_or_testing": [
+  "removed": [
     { "screen_name": "polley_helen", "id_str": "929373746" },
+    { "screen_name": "phocks", "id_str": "5703342" }
+  ],
+  "testing": [
     { "screen_name": "phocks", "id_str": "5703342" }
   ]
 }

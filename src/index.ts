@@ -35,7 +35,7 @@ import originalTargets from "./utils/targets.json";
 
 // Development thread
 const development = async () => {
-  await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
+  await watchUsers(auspolwatchConfig.testing, auspolwatchKeys);
   // await convertScreenNames(originalTargets, auspolwatchKeys)
 };
 
