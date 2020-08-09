@@ -49,8 +49,7 @@
     { "screen_name": "AnnastaciaMP", "id_str": "256833444" }
   ],
   "removed": [
-    { "screen_name": "polley_helen", "id_str": "929373746" },
-    { "screen_name": "phocks", "id_str": "5703342" }
+    { "screen_name": "polley_helen", "id_str": "929373746" }
   ],
   "testing": [
     { "screen_name": "phocks", "id_str": "5703342" }
