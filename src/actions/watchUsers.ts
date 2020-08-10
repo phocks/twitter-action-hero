@@ -264,7 +264,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       // Check verified status
       result = runComparison("verified", localUser, remoteUser);
-      console.log(result);
+      log(result);
 
       // if (true || result.changed) {
       //   console.log(`Processing verified change...`);
