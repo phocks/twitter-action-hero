@@ -1,6 +1,5 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
-import { AnyARecord } from "dns";
 // import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
