@@ -137,12 +137,12 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
         if (process.env.NODE_ENV === "development") {
           console.log(
             "Currently in development mode so not tweeting but would have tweeted: \n" +
-              `${result.old} changed their screen name to ${result.new}`
+              `${result.old} changed their screen name to "${result.new}"`
           );
         } else {
           const [tweetError, tweetResult] = await to(
             twitter.post("statuses/update", {
-              status: `${result.old} changed their screen name to ${result.new}`,
+              status: `${result.old} changed their screen name to "${result.new}"`,
             })
           );
 
@@ -168,22 +168,22 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       if (result.changed) {
         // User changed their Twitter name
-        console.log(`Name from "${result.old}" to "${result.new}"`);
+        console.log(`Name changed from "${result.old}" to "${result.new}"`);
 
         // Tweet change out
         if (process.env.NODE_ENV === "development") {
           console.log(
             "Currently in development mode so not tweeting but would have tweeted: \n" +
-              `${localUser.value().screen_name} changed their Twitter name from ${
-                result.old
-              } to ${result.new}`
+              `${
+                localUser.value().screen_name
+              } changed their Twitter name from "${result.old}" to "${result.new}"`
           );
         } else {
           const [tweetError, tweetResult] = await to(
             twitter.post("statuses/update", {
               status: `${
                 localUser.value().screen_name
-              } changed their Twitter name from ${result.old} to ${result.new}`,
+              } changed their Twitter name from "${result.old}" to "${result.new}"`,
             })
           );
 
@@ -197,6 +197,34 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check for location change
       result = runComparison("location", localUser, remoteUser);
       log(result);
+
+      if (result.changed) {
+        // User changed their location
+        console.log(`Location changed from "${result.old}" to "${result.new}"`);
+
+        // Tweet change out
+        if (process.env.NODE_ENV === "development") {
+          console.log(
+            "Currently in development mode so not tweeting but would have tweeted: \n" +
+              `${localUser.value().screen_name} changed their location from "${
+                result.old
+              }" to "${result.new}"`
+          );
+        } else {
+          const [tweetError, tweetResult] = await to(
+            twitter.post("statuses/update", {
+              status: `${
+                localUser.value().screen_name
+              } changed their location from "${result.old}" to "${result.new}"`,
+            })
+          );
+
+          if (tweetError) console.error(tweetError);
+          if (tweetResult) {
+            console.log(`Tweeted location change...`);
+          }
+        }
+      }
 
       // Check for description change
       result = runComparison("description", localUser, remoteUser);
