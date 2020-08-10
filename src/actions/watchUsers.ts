@@ -1,5 +1,6 @@
 import Twitter, { TwitterOptions } from "twitter-lite";
 import to from "await-to-js";
+import { AnyARecord } from "dns";
 // import longly from "../lib/longly";
 
 const appRoot = require("app-root-path");
@@ -26,6 +27,7 @@ const log = (thingToLog: any) => {
   if (verbose) console.log(thingToLog);
 };
 
+// Function to compare one local user object to remotely fetched one
 const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
   const localAttribute = localUser.value()[attribute];
   const remoteAttribute = remoteUser[attribute];
@@ -56,6 +58,36 @@ const runComparison = (attribute: string, localUser: any, remoteUser: any) => {
   // Write change to the local database
   localUser.assign({ [attribute]: remoteUser[attribute] }).write();
   return { changed: true, old: localAttribute, new: remoteAttribute };
+};
+
+// Function to do a tweet if not in development mode
+// TODO: implement production mode
+const tweetItOut = async ({
+  twitter,
+  tweet,
+}: {
+  twitter: any;
+  tweet: string;
+}) => {
+  // Tweet change out
+  if (process.env.NODE_ENV === "development") {
+    console.log(
+      `Currently in development mode so not tweeting but would have tweeted:`
+    );
+    console.log(tweet);
+  } else {
+    const [tweetError, tweetResult] = await to(
+      twitter.post("statuses/update", {
+        status: tweet,
+      })
+    );
+
+    if (tweetError) console.error(tweetError);
+    if (tweetResult) {
+      console.log(`Tweeted successfully:`);
+      console.log(tweet);
+    }
+  }
 };
 
 // Main module
@@ -133,24 +165,10 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
           `SCREEN NAME CHANGED from "${result.old}" to "${result.new}"`
         );
 
-        // Tweet change out
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "Currently in development mode so not tweeting but would have tweeted: \n" +
-              `${result.old} changed their screen name to "${result.new}"`
-          );
-        } else {
-          const [tweetError, tweetResult] = await to(
-            twitter.post("statuses/update", {
-              status: `${result.old} changed their screen name to "${result.new}"`,
-            })
-          );
-
-          if (tweetError) console.error(tweetError);
-          if (tweetResult) {
-            console.log(`Tweeted screen name change...`);
-          }
-        }
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${result.old} changed their screen name to "${result.new}"`,
+        });
 
         // Screen name is also in config so log to db to update later manually
         db.get("screenNameChanged")
@@ -168,30 +186,14 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       if (result.changed) {
         // User changed their Twitter name
-        console.log(`Name changed from "${result.old}" to "${result.new}"`);
+        console.log(`Processing Twitter name change...`);
 
-        // Tweet change out
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "Currently in development mode so not tweeting but would have tweeted: \n" +
-              `${
-                localUser.value().screen_name
-              } changed their Twitter name from "${result.old}" to "${result.new}"`
-          );
-        } else {
-          const [tweetError, tweetResult] = await to(
-            twitter.post("statuses/update", {
-              status: `${
-                localUser.value().screen_name
-              } changed their Twitter name from "${result.old}" to "${result.new}"`,
-            })
-          );
-
-          if (tweetError) console.error(tweetError);
-          if (tweetResult) {
-            console.log(`Tweeted name change...`);
-          }
-        }
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${
+            localUser.value().screen_name
+          } changed their Twitter name to "${result.new}"`,
+        });
       }
 
       // Check for location change
@@ -200,30 +202,14 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
 
       if (result.changed) {
         // User changed their location
-        console.log(`Location changed from "${result.old}" to "${result.new}"`);
+        console.log(`Processing location change...`);
 
-        // Tweet change out
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "Currently in development mode so not tweeting but would have tweeted: \n" +
-              `${localUser.value().screen_name} changed their location from "${
-                result.old
-              }" to "${result.new}"`
-          );
-        } else {
-          const [tweetError, tweetResult] = await to(
-            twitter.post("statuses/update", {
-              status: `${
-                localUser.value().screen_name
-              } changed their location from "${result.old}" to "${result.new}"`,
-            })
-          );
-
-          if (tweetError) console.error(tweetError);
-          if (tweetResult) {
-            console.log(`Tweeted location change...`);
-          }
-        }
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${
+            localUser.value().screen_name
+          } changed their location from "${result.old}" to "${result.new}"`,
+        });
       }
 
       // Check for description change
@@ -231,15 +217,14 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       log(result);
 
       if (result.changed) {
-        console.log(`Processing profile change...`);
+        console.log(`Processing description change...`);
 
-        db.get("screenNameChanged")
-          .push({
-            id_str: remoteUser.id_str,
-            local_screen_name: localUser.value().screen_name,
-            remote_screen_name: remoteUser.screen_name,
-          })
-          .write();
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${localUser.value().screen_name} description change: "${
+            result.old
+          }" to http://twitter.com/${localUser.value().screen_name}`,
+        });
       }
 
       // Check profile URL
@@ -266,9 +251,33 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       //   console.log(result);
       // });
 
+      if (result.changed) {
+        console.log(`Processing URL change...`);
+
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${
+            localUser.value().screen_name
+          } changed their profile URL from ${result.old} to ${result.new}`,
+        });
+      }
+
       // Check verified status
       result = runComparison("verified", localUser, remoteUser);
-      log(result);
+      console.log(result);
+
+      // if (true || result.changed) {
+      //   console.log(`Processing verified change...`);
+
+      //   console.log(typeof result.new);
+
+      //   await tweetItOut({
+      //     twitter: twitter,
+      //     tweet: `${
+      //       localUser.value().screen_name
+      //     } changed their profile URL from ${result.old} to ${result.new}`,
+      //   });
+      // }
 
       // See if account protected (private)
       result = runComparison("protected", localUser, remoteUser);
