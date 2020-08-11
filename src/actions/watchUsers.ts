@@ -230,6 +230,17 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       result = runComparison("url", localUser, remoteUser);
       log(result);
 
+      if (result.changed) {
+        console.log(`Processing URL change...`);
+
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${
+            localUser.value().screen_name
+          } changed their profile URL from ${result.old} to ${result.new}`,
+        });
+      }
+
       // // Expand URLs
       // console.log("Expanding short-urls...");
       // if (result.old) {
@@ -250,20 +261,23 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       //   console.log(result);
       // });
 
-      if (result.changed) {
-        console.log(`Processing URL change...`);
-
-        await tweetItOut({
-          twitter: twitter,
-          tweet: `${
-            localUser.value().screen_name
-          } changed their profile URL from ${result.old} to ${result.new}`,
-        });
-      }
-
       // Check verified status
       result = runComparison("verified", localUser, remoteUser);
       log(result);
+
+      if (result.changed && result.old === false && result.new === true) {
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${localUser.value().screen_name} became a verified account on Twitter`,
+        });
+      }
+
+      if (result.changed && result.old === true && result.new === false) {
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${localUser.value().screen_name} is no longer a verified account on Twitter`,
+        });
+      }
 
       // if (true || result.changed) {
       //   console.log(`Processing verified change...`);
@@ -281,6 +295,20 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // See if account protected (private)
       result = runComparison("protected", localUser, remoteUser);
       log(result);
+
+      if (result.changed && result.old === false && result.new === true) {
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${localUser.value().screen_name} locked their account`,
+        });
+      }
+
+      if (result.changed && result.old === true && result.new === false) {
+        await tweetItOut({
+          twitter: twitter,
+          tweet: `${localUser.value().screen_name} unlocked their account`,
+        });
+      }
 
       // Check favourites
       result = runComparison("favourites_count", localUser, remoteUser);
