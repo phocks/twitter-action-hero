@@ -131,7 +131,8 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
     // Add users if missing
     if (!userExists) {
       log("User missing in local db. Adding...");
-      db.get("usersToWatch").push(user).write();
+      // Only add id_str
+      db.get("usersToWatch").push({ id_str: user.id_str }).write();
     } else {
       log(`User "${user.screen_name}" exists!`);
     }
@@ -429,7 +430,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
                   `Tweeted ${fav} from ${currentFav.user.screen_name}`
                 );
               }
-            } else console.log("Set NODE_ENV=production to tweet")
+            } else console.log("Set NODE_ENV=production to tweet");
           }
 
           // Write updated favourites to the database
