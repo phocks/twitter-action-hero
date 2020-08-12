@@ -74,7 +74,7 @@ const tweetItOut = async ({
       `Currently in development mode so not tweeting but would have tweeted:`
     );
     console.log(tweet);
-  } else {
+  } else if (process.env.NODE_ENV === "production") {
     const [tweetError, tweetResult] = await to(
       twitter.post("statuses/update", {
         status: tweet,
@@ -86,7 +86,7 @@ const tweetItOut = async ({
       console.log(`Tweeted successfully:`);
       console.log(tweet);
     }
-  }
+  } else console.log("Set NODE_ENV=production to tweet");
 };
 
 // Main module
@@ -268,14 +268,18 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       if (result.changed && result.old === false && result.new === true) {
         await tweetItOut({
           twitter: twitter,
-          tweet: `${localUser.value().screen_name} became a verified account on Twitter`,
+          tweet: `${
+            localUser.value().screen_name
+          } became a verified account on Twitter`,
         });
       }
 
       if (result.changed && result.old === true && result.new === false) {
         await tweetItOut({
           twitter: twitter,
-          tweet: `${localUser.value().screen_name} is no longer a verified account on Twitter`,
+          tweet: `${
+            localUser.value().screen_name
+          } is no longer a verified account on Twitter`,
         });
       }
 
@@ -410,7 +414,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
                   `${localUser.value().screen_name} liked ` +
                   `this tweet: https://twitter.com/${currentFav.user.screen_name}/status/${fav}`
               );
-            } else {
+            } else if (process.env.NODE_ENV === "production") {
               const [tweetError, tweetResult] = await to(
                 twitter.post("statuses/update", {
                   status:
@@ -425,7 +429,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
                   `Tweeted ${fav} from ${currentFav.user.screen_name}`
                 );
               }
-            }
+            } else console.log("Set NODE_ENV=production to tweet")
           }
 
           // Write updated favourites to the database
@@ -437,6 +441,34 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       // Check if friend count changed (indicates following/unfollowing)
       result = runComparison("friends_count", localUser, remoteUser);
       log(result);
+
+      if (result.changed) {
+        console.log(`Processing friend count change...`);
+
+        // Tweet friend count went up
+        if (result.new > result.old) {
+          await tweetItOut({
+            twitter: twitter,
+            tweet: `${
+              localUser.value().screen_name
+            } is now following 1 or more new people. "Friend" count went from "${
+              result.old
+            }" to "${result.new}".`,
+          });
+        }
+
+        // Tweet friend count went down
+        if (result.new < result.old) {
+          await tweetItOut({
+            twitter: twitter,
+            tweet: `${
+              localUser.value().screen_name
+            } unfollowed 1 or more new people. "Friend" count went from "${
+              result.old
+            }" to "${result.new}".`,
+          });
+        }
+      }
 
       // If number of friends to get change we want to reset the database ids
       if (localUser.value().friends_to_fetch_count !== FRIENDS_TO_GET) {
