@@ -446,29 +446,29 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
       if (result.changed) {
         console.log(`Processing friend count change...`);
 
-        // Tweet friend count went up
-        if (result.new > result.old) {
-          await tweetItOut({
-            twitter: twitter,
-            tweet: `${
-              localUser.value().screen_name
-            } is now following 1 or more new people. "Friend" count went from "${
-              result.old
-            }" to "${result.new}".`,
-          });
-        }
+        // // Tweet friend count went up
+        // if (result.new > result.old) {
+        //   await tweetItOut({
+        //     twitter: twitter,
+        //     tweet: `${
+        //       localUser.value().screen_name
+        //     } is now following 1 or more new people. "Friend" count went from "${
+        //       result.old
+        //     }" to "${result.new}".`,
+        //   });
+        // }
 
-        // Tweet friend count went down
-        if (result.new < result.old) {
-          await tweetItOut({
-            twitter: twitter,
-            tweet: `${
-              localUser.value().screen_name
-            } unfollowed 1 or more people. "Friend" count went from "${
-              result.old
-            }" to "${result.new}".`,
-          });
-        }
+        // // Tweet friend count went down
+        // if (result.new < result.old) {
+        //   await tweetItOut({
+        //     twitter: twitter,
+        //     tweet: `${
+        //       localUser.value().screen_name
+        //     } unfollowed 1 or more people. "Friend" count went from "${
+        //       result.old
+        //     }" to "${result.new}".`,
+        //   });
+        // }
       }
 
       // If number of friends to get change we want to reset the database ids
