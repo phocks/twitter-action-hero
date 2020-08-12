@@ -464,7 +464,7 @@ export default async (usersToWatch: WatchedUser[], keys: TwitterOptions) => {
             twitter: twitter,
             tweet: `${
               localUser.value().screen_name
-            } unfollowed 1 or more new people. "Friend" count went from "${
+            } unfollowed 1 or more people. "Friend" count went from "${
               result.old
             }" to "${result.new}".`,
           });
