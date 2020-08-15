@@ -85,6 +85,8 @@ export default async (keys: any) => {
   for (const account of result) {
     if (account.connections.includes("followed_by")) {
       console.log(`Account "${account.screen_name}" is following. All good!`);
+      // Pull from database
+      accountsToProcess.pull(account.id_str).write();
     } else {
       unfollowedThroughApiCount++;
 
@@ -113,8 +115,8 @@ export default async (keys: any) => {
           `User "${account.screen_name}" would have been unfollowed if running NODE_ENV=production`
         );
       }
+      // Pull from database
+      accountsToProcess.pull(account.id_str).write();
     }
-    // We tried so pull it
-    accountsToProcess.pull(account.id_str).write();
   }
 };
