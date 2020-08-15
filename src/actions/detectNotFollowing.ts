@@ -17,6 +17,20 @@ const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 3;
 export default async (keys: any) => {
   const twitter = new Twitter(keys);
 
+  // Testing
+  // const [testError, testResult] = await to(
+  //   twitter.get("friendships/show", {
+  //     source_screen_name: "phocks",
+  //     target_id: "557491311",
+  //   })
+  // );
+
+  // if (testError) console.error(testError);
+
+  // console.log(testResult);
+
+  // return;
+
   const accountsToProcess = db.get("accountsToProcess");
 
   // Check if starting again (Clear data file to start again)
@@ -40,20 +54,23 @@ export default async (keys: any) => {
     return;
   }
 
-  // Otherwise process accounts
-  let commaSeparatedIds: string = "";
+  // Get first N accounts to process this time
+  const thisBatch = accountsToProcess.value().slice(0, LOOKUP_LIMIT);
+  const commaSeparatedIds = thisBatch.join(",");
 
-  // Make a string with comma separated ids to process
-  for (const [index, id_str] of accountsToProcess.value().entries()) {
-    if (index > LOOKUP_LIMIT - 1) break;
-    commaSeparatedIds += `${id_str},`;
-  }
+  // // Otherwise process accounts
+  // let commaSeparatedIds: string = "";
+
+  // // Make a string with comma separated ids to process
+  // for (const [index, id_str] of accountsToProcess.value().entries()) {
+  //   if (index > LOOKUP_LIMIT - 1) break;
+  //   commaSeparatedIds += `${id_str},`;
+  // }
 
   console.log(`Got some ids to process...`);
-
   console.log(commaSeparatedIds);
 
-  const [error, result] = await to(
+  const [error, results] = await to(
     twitter.get("friendships/lookup", { user_id: commaSeparatedIds })
   );
 
@@ -62,27 +79,35 @@ export default async (keys: any) => {
     return;
   }
 
-  console.log(result);
+  console.log(`Got ${results.length} results from Twitter...`)
+
+  // Map results for difference comparrison
+  const lookupIds = results.map((element: any) => element.id_str);
+
+  // If user not in results then delete from database
+  const userNotFound = thisBatch.filter((x: string) => !lookupIds.includes(x));
+  for (const userId of userNotFound) {
+    accountsToProcess.pull(userId).write();
+  }
 
   // Sometimes twitter returns nothing so... try again with the next lot
+  // if (result.length === 0) {
+  //   commaSeparatedIds = "";
+  //   for (const [index, id_str] of accountsToProcess.value().entries()) {
+  //     if (index > LOOKUP_LIMIT - 1) break;
+  //     accountsToProcess.pull(id_str).write();
+  //   }
 
-  if (result.length === 0) {
-    commaSeparatedIds = "";
-    for (const [index, id_str] of accountsToProcess.value().entries()) {
-      if (index > LOOKUP_LIMIT - 1) break;
-      accountsToProcess.pull(id_str).write();
-    }
-
-    for (const [index, id_str] of accountsToProcess.value().entries()) {
-      if (index > LOOKUP_LIMIT - 1) break;
-      commaSeparatedIds += `${id_str},`;
-    }
-  }
+  //   for (const [index, id_str] of accountsToProcess.value().entries()) {
+  //     if (index > LOOKUP_LIMIT - 1) break;
+  //     commaSeparatedIds += `${id_str},`;
+  //   }
+  // }
 
   // Use as API rate limiter
   let unfollowedThroughApiCount = 0;
 
-  for (const account of result) {
+  for (const account of results) {
     if (account.connections.includes("followed_by")) {
       console.log(`Account "${account.screen_name}" is following. All good!`);
       // Pull from database
