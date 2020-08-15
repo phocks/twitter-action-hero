@@ -27,8 +27,11 @@ const production = async () => {
     cowspriactyBotKeys
   );
 
-  // Holder action that will become @auspolwatch
+  // Action to run @auspolwatch script
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
+
+  // Run a friend watcher for a while
+  await detectNotFollowing(myKeys)
 };
 
 // Some utils etc
