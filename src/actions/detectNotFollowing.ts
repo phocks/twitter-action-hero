@@ -12,7 +12,7 @@ const db = low(adapter);
 // db.defaults({ accountsToProcess: [] }).write();
 
 const LOOKUP_LIMIT = 100;
-const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 3;
+const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 5;
 
 export default async (keys: any) => {
   const twitter = new Twitter(keys);
