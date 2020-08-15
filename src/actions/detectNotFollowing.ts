@@ -58,10 +58,10 @@ export default async (keys: any) => {
     return;
   }
 
+  // console.log(result);
+
   // Use as API rate limiter
   let unfollowedThroughApiCount = 0;
-
-  console.log(result);
 
   for (const account of result) {
     if (account.connections.includes("followed_by")) {
