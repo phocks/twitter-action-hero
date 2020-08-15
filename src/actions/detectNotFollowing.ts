@@ -9,7 +9,7 @@ const FileSync = require("lowdb/adapters/FileSync");
 const adapter = new FileSync(`${appRoot}/data/detectNotFollowing.json`);
 const db = low(adapter);
 
-db.defaults({ accountsToProcess: [] }).write();
+// db.defaults({ accountsToProcess: [] }).write();
 
 const LOOKUP_LIMIT = 100;
 const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 3;
@@ -19,8 +19,8 @@ export default async (keys: any) => {
 
   const accountsToProcess = db.get("accountsToProcess");
 
-  // Check if to have accounts to process
-  if (accountsToProcess.value().length === 0) {
+  // Check if starting again (Clear data file to start again)
+  if (typeof accountsToProcess.value() === "undefined") {
     console.log(`Getting and storing friends list for future processing`);
     const [error, result] = await to(twitter.get("friends/ids"));
 
@@ -34,6 +34,12 @@ export default async (keys: any) => {
     db.set("accountsToProcess", idsAsStrings).write();
   }
 
+  // If no accounts left just alert user and halt
+  if (accountsToProcess.value().length === 0) {
+    console.log(`No accounts left to process. Exiting...`);
+    return;
+  }
+
   // Otherwise process accounts
   let commaSeparatedIds: string = "";
 
@@ -41,8 +47,6 @@ export default async (keys: any) => {
   for (const [index, id_str] of accountsToProcess.value().entries()) {
     if (index > LOOKUP_LIMIT - 1) break;
     commaSeparatedIds += `${id_str},`;
-    // Regardless pull the id... we tried
-    accountsToProcess.pull(id_str).write();
   }
 
   console.log(`Got some ids to process...`);
@@ -58,7 +62,22 @@ export default async (keys: any) => {
     return;
   }
 
-  // console.log(result);
+  console.log(result);
+
+  // Sometimes twitter returns nothing so... try again with the next lot
+
+  if (result.length === 0) {
+    commaSeparatedIds = "";
+    for (const [index, id_str] of accountsToProcess.value().entries()) {
+      if (index > LOOKUP_LIMIT - 1) break;
+      accountsToProcess.pull(id_str).write();
+    }
+
+    for (const [index, id_str] of accountsToProcess.value().entries()) {
+      if (index > LOOKUP_LIMIT - 1) break;
+      commaSeparatedIds += `${id_str},`;
+    }
+  }
 
   // Use as API rate limiter
   let unfollowedThroughApiCount = 0;
@@ -95,5 +114,7 @@ export default async (keys: any) => {
         );
       }
     }
+    // We tried so pull it
+    accountsToProcess.pull(account.id_str).write();
   }
 };
