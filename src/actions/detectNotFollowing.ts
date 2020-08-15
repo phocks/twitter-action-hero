@@ -12,7 +12,7 @@ const db = low(adapter);
 db.defaults({ accountsToProcess: [] }).write();
 
 const LOOKUP_LIMIT = 100;
-const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 2;
+const MAX_USERS_TO_UNFOLLOW_PER_ITERATION = 3;
 
 export default async (keys: any) => {
   const twitter = new Twitter(keys);
@@ -37,10 +37,11 @@ export default async (keys: any) => {
   // Otherwise process accounts
   let commaSeparatedIds: string = "";
 
-  accountsToProcess.value().forEach((id_str: string, iteration: number) => {
-    if (iteration > LOOKUP_LIMIT - 1) return;
+  // Make a string with comma separated ids to process
+  for (const [index, id_str] of accountsToProcess.value().entries()) {
+    if (index > LOOKUP_LIMIT - 1) break;
     commaSeparatedIds += `${id_str},`;
-  });
+  }
 
   console.log(`Got some ids to process...`);
 
@@ -57,6 +58,7 @@ export default async (keys: any) => {
   let unfollowedThroughApiCount = 0;
 
   for (const account of result) {
+    console.log(account);
     if (account.connections.includes("followed_by")) {
       console.log(`Account "${account.screen_name}" is following. All good!`);
       accountsToProcess.pull(account.id_str).write();
@@ -65,20 +67,22 @@ export default async (keys: any) => {
 
       if (unfollowedThroughApiCount > MAX_USERS_TO_UNFOLLOW_PER_ITERATION) {
         console.log(
-          `Refusing to unfollow ${account.screen_name} more to keep Twitter API team happy...`
+          `Refusing to unfollow "${account.screen_name}" to keep Twitter API team happy...`
         );
         return;
       }
 
       console.log(`Account "${account.screen_name}" isn't following... :(`);
 
-      const [error, result] = await to(
-        twitter.post("friendships/destroy", { user_id: account.id_str })
-      );
+      if (process.env.NODE_ENV === "production") {
+        const [error, result] = await to(
+          twitter.post("friendships/destroy", { user_id: account.id_str })
+        );
 
-      if (error) {
-        console.error(error);
-        return;
+        if (error) {
+          console.error(error);
+          return;
+        }
       }
 
       console.log(`User "${account.screen_name}" was unfollowed on Twitter!`);
