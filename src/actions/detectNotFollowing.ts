@@ -42,8 +42,7 @@ export default async (keys: any) => {
     commaSeparatedIds += `${id_str},`;
   });
 
-  console.log(`Got some ids to process: `);
-  console.log(commaSeparatedIds);
+  console.log(`Got some ids to process...`);
 
   const [error, result] = await to(
     twitter.get("friendships/lookup", { user_id: commaSeparatedIds })
