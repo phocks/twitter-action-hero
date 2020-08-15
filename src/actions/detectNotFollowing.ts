@@ -58,7 +58,6 @@ export default async (keys: any) => {
   let unfollowedThroughApiCount = 0;
 
   for (const account of result) {
-    console.log(account);
     if (account.connections.includes("followed_by")) {
       console.log(`Account "${account.screen_name}" is following. All good!`);
       accountsToProcess.pull(account.id_str).write();
@@ -72,7 +71,7 @@ export default async (keys: any) => {
         return;
       }
 
-      console.log(`Account "${account.screen_name}" isn't following... :(`);
+      console.log(`Account "${account.screen_name}" isn't following... 😞`);
 
       if (process.env.NODE_ENV === "production") {
         const [error, result] = await to(
