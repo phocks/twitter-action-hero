@@ -41,9 +41,13 @@ export default async (keys: any) => {
   for (const [index, id_str] of accountsToProcess.value().entries()) {
     if (index > LOOKUP_LIMIT - 1) break;
     commaSeparatedIds += `${id_str},`;
+    // Regardless pull the id... we tried
+    accountsToProcess.pull(id_str).write();
   }
 
   console.log(`Got some ids to process...`);
+
+  console.log(commaSeparatedIds);
 
   const [error, result] = await to(
     twitter.get("friendships/lookup", { user_id: commaSeparatedIds })
@@ -57,10 +61,11 @@ export default async (keys: any) => {
   // Use as API rate limiter
   let unfollowedThroughApiCount = 0;
 
+  console.log(result);
+
   for (const account of result) {
     if (account.connections.includes("followed_by")) {
       console.log(`Account "${account.screen_name}" is following. All good!`);
-      accountsToProcess.pull(account.id_str).write();
     } else {
       unfollowedThroughApiCount++;
 
@@ -82,12 +87,13 @@ export default async (keys: any) => {
           console.error(error);
           return;
         }
+
+        console.log(`User "${account.screen_name}" was unfollowed on Twitter!`);
+      } else {
+        console.log(
+          `User "${account.screen_name}" would have been unfollowed if running NODE_ENV=production`
+        );
       }
-
-      console.log(`User "${account.screen_name}" was unfollowed on Twitter!`);
-
-      // Pull that id from accounts to process
-      accountsToProcess.pull(account.id_str).write();
     }
   }
 };
