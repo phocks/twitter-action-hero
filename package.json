@@ -2,7 +2,7 @@
   "name": "twitter-action-hero",
   "version": "1.0.0",
   "description": "Twitter actions using the API",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/phocks/twitter-action-hero"
