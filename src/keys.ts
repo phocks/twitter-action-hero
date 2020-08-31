@@ -18,3 +18,10 @@ export const auspolwatchKeys = {
   access_token_key: process.env.AUSPOLWATCH_ACCESS_TOKEN!,
   access_token_secret: process.env.AUSPOLWATCH_ACCESS_TOKEN_SECRET!,
 };
+
+export const veganAnswersKeys = {
+  consumer_key: process.env.USER_CONSUMER_KEY!,
+  consumer_secret: process.env.USER_CONSUMER_SECRET!,
+  access_token_key: process.env.USER_ACCESS_TOKEN!,
+  access_token_secret: process.env.USER_ACCESS_TOKEN_SECRET!,
+};

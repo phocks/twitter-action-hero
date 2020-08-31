@@ -9,7 +9,12 @@ import watchUsers from "./actions/watchUsers";
 import detectNotFollowing from "./actions/detectNotFollowing";
 
 // Import environment keys
-import { myKeys, cowspriactyBotKeys, auspolwatchKeys } from "./keys";
+import {
+  myKeys,
+  cowspriactyBotKeys,
+  auspolwatchKeys,
+  veganAnswersKeys,
+} from "./keys";
 
 // Load somee configs for actions
 const blockedUsernames = ["cowspiracybot"];
@@ -31,19 +36,17 @@ const production = async () => {
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 
   // Run a friend watcher for a while
-  await detectNotFollowing(myKeys)
+  await detectNotFollowing(myKeys);
 };
 
 // Some utils etc
-import convertScreenNames from "./utils/convertScreenNames"
+import convertScreenNames from "./utils/convertScreenNames";
 import originalTargets from "./utils/targets.json";
-
 
 // Development thread
 const development = async () => {
-  await detectNotFollowing(myKeys)
-  // await watchUsers(auspolwatchConfig.testing, auspolwatchKeys);
-  // await convertScreenNames(originalTargets, auspolwatchKeys)
+  console.log(`Running development actions...`)
+  // TODO: add actions
 };
 
 // Check for dev
