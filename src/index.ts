@@ -8,6 +8,8 @@ import searchAndRetweet from "./actions/searchAndRetweet";
 import watchUsers from "./actions/watchUsers";
 import detectNotFollowing from "./actions/detectNotFollowing";
 
+import test from "./actions/twitterApiV2"
+
 // Import environment keys
 import {
   myKeys,
@@ -47,6 +49,7 @@ import originalTargets from "./utils/targets.json";
 const development = async () => {
   console.log(`Running development actions...`)
   // TODO: add actions
+  test();
 };
 
 // Check for dev
