@@ -43,7 +43,7 @@ const production = async () => {
 
 // Some utils etc
 import convertScreenNames from "./utils/convertScreenNames";
-import originalTargets from "./utils/targets.json";
+import originalTargets from "./utils/data/targets.json";
 
 // Development thread
 const development = async () => {

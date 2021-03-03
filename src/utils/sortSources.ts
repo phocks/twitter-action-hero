@@ -1,6 +1,6 @@
 import fs from "fs";
 
-import sources from "./twitter-sources-overnight.json";
+import sources from "./data/twitter-sources-overnight.json";
 import { myKeys } from "../keys";
 
 // for (const source in sources) {
