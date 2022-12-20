@@ -38,7 +38,7 @@ const production = async () => {
   await watchUsers(auspolwatchConfig.targets, auspolwatchKeys);
 
   // Run a friend watcher for a while
-  await detectNotFollowing(myKeys);
+  // await detectNotFollowing(myKeys);
 };
 
 // Some utils etc
