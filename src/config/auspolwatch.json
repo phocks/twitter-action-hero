@@ -29,7 +29,6 @@
     { "screen_name": "cpyne", "id_str": "2592733051" },
     { "screen_name": "SenatorNash", "id_str": "2649623161" },
     { "screen_name": "RealBobKatter", "id_str": "310726037" },
-    { "screen_name": "thepmo", "id_str": "838631981315338240" },
     { "screen_name": "MRobertsQLD", "id_str": "762470063261704192" },
     { "screen_name": "SenPaterson", "id_str": "28791311" },
     { "screen_name": "SenatorSiewert", "id_str": "25298878" },
@@ -52,6 +51,7 @@
     { "screen_name": "polley_helen", "id_str": "929373746" },
     { "screen_name": "cporterwa", "id_str": "1559788717" },
     { "screen_name": "SenatorAbetz", "id_str": "128440862" },
+    { "screen_name": "thepmo", "id_str": "838631981315338240" }
   ],
   "testing": [
     { "screen_name": "phocks", "id_str": "5703342" }
